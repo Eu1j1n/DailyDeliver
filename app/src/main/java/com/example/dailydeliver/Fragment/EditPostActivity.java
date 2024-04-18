@@ -92,9 +92,9 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
 
 
-    private String baseUri = "http://52.79.88.52/";
+    private String baseUri = "http://43.201.32.122/";
 
-    String ImageUri = "http://52.79.88.52/postImage/";
+    String ImageUri = "http://43.201.32.122/postImage/";
 
     private static final int MAX_IMAGE_COUNT = 10;
 
@@ -310,7 +310,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    // EditPostActivity에서 전달한 데이터를 받아옵니다.
+                    // EditPostActivity에서 전달한 데이터를 받기
                     Intent data = result.getData();
                     if (data != null) {
                         String fullAddress = data.getStringExtra("FULLADDRESS");
@@ -320,11 +320,11 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                         Log.d(TAG, "latitude" + latitude);
                         Log.d(TAG, "longitude" + longitude);
                         Log.d(TAG, "fullAddress" + fullAddress);
-                        // 쉼표가 있는 경우 쉼표를 제거하고 텍스트뷰에 설정합니다.
+                        // 쉼표가 있는 경우 쉼표를 제거하고 텍스트뷰에 설정
                         if (dong.contains(",")) {
                             dong = dong.replace(",", "");
                         }
-                        // 선택한 주소를 텍스트뷰에 설정합니다.
+                        // 선택한 주소를 텍스트뷰에 설정
                         locationTextView.setText(dong);
                     }
                 }
@@ -412,7 +412,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         imageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         imageRecyclerView.setAdapter(adapter);
 
-        // 이미지가 추가될 때마다 totalCount를 증가시키고, imageCountTextView를 업데이트합니다.
+        // 이미지가 추가될 때마다 totalCount를 증가시키고, imageCountTextView를 업데이트
         int totalCount = selectedImageUris.size();
         imageCountTextView.setText(totalCount + "/10");
 
@@ -424,7 +424,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         String title = titleEditText.getText().toString();
         String location = locationTextView.getText().toString();
 
-        // 사용자 ID, 인덱스 및 시간 정보를 결합하여 파일 이름을 생성합니다.
+        // 사용자 ID, 인덱스 및 시간 정보를 결합하여 파일 이름을 생성
         return "postImage_" + userId + "_" + title + "_" + location + "_" + index + ".jpg";
     }
 
@@ -495,7 +495,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                     if (response.isSuccessful()) {
                         progressBar.setVisibility(View.GONE);
 
-                        // 액티비티를 종료하거나 다른 작업을 수행합니다.
                         finish();
                         Log.d(TAG, "Image uploaded successfully");
                     } else {

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.dailydeliver.ApiService;
+import com.example.dailydeliver.Chatting.Chatting;
 import com.example.dailydeliver.ImageResponse;
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
@@ -55,13 +56,15 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     Double latitude, longitude;
 
+    private String receivedID;
+
     String TAG = "디테일 액티비티";
 
     private ImagePagerAdapter imagePagerAdapter;
 
-    String baseUri = "http://52.79.88.52/";
+    String baseUri = "http://43.201.32.122/";
 
-    String imageUri = "http://52.79.88.52/postImage/";
+    String imageUri = "http://43.201.32.122/postImage/";
 
     CircleIndicator3 circleIndicator;
 
@@ -93,6 +96,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         String sendTime = intent.getStringExtra("send_time");
         String price = intent.getStringExtra("price");
         String userName = intent.getStringExtra("user_name");
+        receivedID = intent.getStringExtra("receivedID");
 
 
 
@@ -100,6 +104,18 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         // 이미지 데이터 가져오기
         getImageData(title, location, price, userName);
         getProfileImage(userName);
+
+        chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chatIntent = new Intent(ProductDetail.this, Chatting.class);
+                chatIntent.putExtra("roomName",receivedID + "01072047094" + nicknameTextView.getText().toString());
+                chatIntent.putExtra("id", receivedID);
+                startActivity(chatIntent);
+            }
+        });
+
+
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +196,12 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             PostDetailData imageData = imageDataList.get(0);
             Log.d(TAG, "");
 
+            if (receivedID != null && imageData.getUserName() != null && receivedID.equals(imageData.getUserName())) {
+                chatButton.setVisibility(View.GONE);
+            } else {
+                chatButton.setVisibility(View.VISIBLE);
+            }
+
             // 각 TextView에 데이터 설정
             titleTextView.setText(imageData.getTitle());
             locationTextView.setText(imageData.getLocation());
@@ -227,7 +249,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
-                String detailAddressText = address.getAddressLine(0); // 첫 번째 주소를 가져옵니다.
+                String detailAddressText = address.getAddressLine(0); // 첫 번째 주소를 가져오기
                 detailAddressText = detailAddressText.replace("대한민국", "");
                 detailAddress.setText("상세 주소 :" + detailAddressText);
             }

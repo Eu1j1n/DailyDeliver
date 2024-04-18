@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
 
     ImageView appLogo;
 
-    String baseUri = "http://52.79.88.52/";
+    String baseUri = "http://43.201.32.122/";
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
@@ -70,11 +70,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
         findViewByID();
-
-
-
-
-
 
 
         getHashKey();

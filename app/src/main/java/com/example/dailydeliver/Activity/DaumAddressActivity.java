@@ -27,7 +27,7 @@ public class DaumAddressActivity extends AppCompatActivity {
 
     String TAG = "다음 주소 찾기 ";
 
-    String baseUri = "http://52.79.88.52/address.html";
+    String baseUri = "http://43.201.32.122/address.html";
 
     class MyJavaScriptInterface {
         @JavascriptInterface

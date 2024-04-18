@@ -10,7 +10,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
     private static final int TIMEOUT_SECONDS = 30; // 타임아웃 시간 (초)
-    private static final String BASE_URL = "http://52.79.241.11";
+    private static final String BASE_URL = "http://43.201.32.122";
 
     public static Retrofit getClient(String baseUrl) {
         if (retrofit == null) {

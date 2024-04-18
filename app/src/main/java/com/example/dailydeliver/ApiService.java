@@ -27,6 +27,11 @@ import retrofit2.http.Query;
 public interface ApiService {
 
 
+    @FormUrlEncoded
+    @POST("updateBasicImage.php")
+    Call<Void> updateBasicImage(@Field("receiveID") String receiveID);
+
+
 
 
     @GET("sendPostDetail.php")

@@ -89,7 +89,7 @@ public class JoinActivity extends AppCompatActivity {
 
     private  static  final int SEARCH_ADDRESS_ACTIVITY = 1002;
 
-    String baseUri = "http://52.79.88.52/";
+    String baseUri = "http://43.201.32.122/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

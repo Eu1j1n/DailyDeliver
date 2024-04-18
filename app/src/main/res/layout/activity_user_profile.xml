@@ -84,6 +84,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/green_button"
                     android:text="로그아웃" />
+
+
             </LinearLayout>
         </LinearLayout>
 

@@ -111,7 +111,7 @@ public class RechargeCreditDialogFragment extends DialogFragment {
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // 다이얼로그를 닫기만 합니다.
+                        // 다이얼로그를 닫기
                         dismiss();
                     }
                 });

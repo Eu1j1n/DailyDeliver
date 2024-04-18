@@ -41,7 +41,7 @@ public class ChatFragment extends Fragment {
     private List<ChatRoomItem> chatRoomItems;
     private ChatRoomAdapter chatAdapter;
 
-    String baseUri = "http://52.79.88.52";
+    String baseUri = "http://43.201.32.122";
 
     private String receivedID;
     private String loginType;
@@ -51,10 +51,7 @@ public class ChatFragment extends Fragment {
     private String ip = "52.79.88.52";
     private int port = 8888;
 
-    private Handler mHandler;
 
-    private Socket socket;
-    private PrintWriter out;
 
     public ChatFragment() {
         chatRoomItems = new ArrayList<>();
@@ -86,45 +83,16 @@ public class ChatFragment extends Fragment {
             intent.putExtra("kakaoUrl", kakaoProfileImageUrl);
             intent.putExtra("roomName", clickedChatRoom.getChatRoomName());
 
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
             startActivity(intent);
         });
 
-        Button startChat = view.findViewById(R.id.startChat);
-        startChat.setOnClickListener(v -> {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-            View dialogView = getLayoutInflater().inflate(R.layout.activity_dialog_chat, null);
-            dialogBuilder.setView(dialogView);
 
-            EditText editTextRoomName = dialogView.findViewById(R.id.editTextRoomName);
-            dialogBuilder.setPositiveButton("확인", (dialog, which) -> {
-                String roomName = editTextRoomName.getText().toString();
-                getLastMessageTime(roomName);
-                getLastMessage(roomName);
-                ChatRoomItem chatRoomItem = new ChatRoomItem(roomName, "마지막 메시지 내용", "프로필 uri", 0, null);
-                chatRoomItems.add(chatRoomItem);
-
-                chatAdapter.notifyDataSetChanged();
-                connectToServer(roomName);
-                getUnreadMessageCount(receivedID, roomName);
-            });
-
-            AlertDialog dialog = dialogBuilder.create();
-            dialog.show();
-        });
 
         Bundle bundle = getArguments();
         if (bundle != null) {
             receivedID = bundle.getString("receivedID");
             loginType = bundle.getString("loginType");
             kakaoProfileImageUrl = bundle.getString("kakaoUrl");
-
             Log.d(TAG, "receivedID 값" + receivedID);
             Log.d(TAG, "loginType 값" + loginType);
             Log.d(TAG, "kakao 값" + kakaoProfileImageUrl);
@@ -138,15 +106,11 @@ public class ChatFragment extends Fragment {
         super.onResume();
 
         Log.d(TAG, "onResume: 여기들어옴?");
-        // 화면이 다시 활성화될 때 안 읽은 메시지 개수를 다시 가져오고, 소켓을 연결합니다.
+        // 화면이 다시 활성화될 때 안 읽은 메시지 개수를 다시 가져오고, 소켓을 연결
         updateUnreadMessageCounts();
         updateLastMessages();
 
-        // 각 채팅방에 대해 소켓을 연결합니다.
-        for (ChatRoomItem room : chatRoomItems) {
-            Log.d(TAG, "onResume: 여긴?");
-            connectToServer(room.getChatRoomName());
-        }
+
     }
 
     @Override
@@ -156,21 +120,10 @@ public class ChatFragment extends Fragment {
         resetUnreadMessageCounts();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // 화면이 종료될 때 소켓을 닫습니다.
-        if (socket != null && !socket.isClosed()) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 
     private void updateUnreadMessageCounts() {
-        // 여기에 현재 사용자의 모든 채팅방에 대한 안 읽은 메시지 개수를 가져오는 로직을 구현
+
         for (ChatRoomItem room : chatRoomItems) {
             // 안 읽은 메시지 개수 업데이트 로직
             getUnreadMessageCount(receivedID, room.getChatRoomName());
@@ -178,7 +131,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void updateLastMessages() {
-        // 각 채팅방에 대해 마지막 메시지의 시간과 내용을 업데이트합니다.
+        // 각 채팅방에 대해 마지막 메시지의 시간과 내용을 업데이트
         for (ChatRoomItem room : chatRoomItems) {
             getLastMessageTime(room.getChatRoomName());
             getLastMessage(room.getChatRoomName());
@@ -215,7 +168,7 @@ public class ChatFragment extends Fragment {
                         }
 
                         chatAdapter.notifyDataSetChanged();
-                        // 여기에서 마지막 메시지 시간을 처리합니다.
+                        // 여기에서 마지막 메시지 시간을 처리
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -304,45 +257,7 @@ public class ChatFragment extends Fragment {
 
 
 
-    private void connectToServer(String roomName) { // 채팅목록에서 소켓 연결하는곳, 채팅 액티비티도 동일함
-        new Thread(() -> {
-            try {
-                socket = new Socket(ip, port);
-                out = new PrintWriter(socket.getOutputStream(), true);
-                out.println(roomName);
-                Log.d(TAG, "이때의 roomName" + roomName);
-                Log.d(TAG, "connect 됨?");
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String message;
-                while ((message = in.readLine()) != null) {
-                    // 메시지 파싱
-                    String[] messageParts = message.split(">");
-                    Log.d(TAG, "message" + message);
-                    if (messageParts.length >= 5) {
-                        String senderID = messageParts[1];
-                        String lastMessage = messageParts[2];
-                        String lastTime = messageParts[5];
-                        Log.d(TAG, "senderID: " + senderID);
-                        Log.d(TAG, "lastMessage" + lastMessage);
-
-                        if (!senderID.equals(receivedID)) {
-                            // 다른 클라이언트에게만 메시지 전송
-                            increaseUnreadMessageCount(roomName);
-                        }
-
-                        updateLastMessage(roomName, lastMessage);
-                        updateLastTime(roomName, lastTime);
-                    } else {
-                        Log.e(TAG, "Invalid message format: " + message);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-    }
 
     private void updateLastMessage(String roomName, String lastMessage) {
         getActivity().runOnUiThread(new Runnable() {

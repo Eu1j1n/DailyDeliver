@@ -112,7 +112,7 @@ public class GoggleMabView extends AppCompatActivity implements OnMapReadyCallba
         }
 
         requestLocationPermission();
-        getLastKnownLocation(); // 마지막으로 알려진 위치를 가져옵니다.
+        getLastKnownLocation(); // 마지막으로 알려진 위치를 가져오기
     }
 
     private void requestLocationPermission() {
@@ -213,29 +213,29 @@ public class GoggleMabView extends AppCompatActivity implements OnMapReadyCallba
             return;
         }
 
-        // FusedLocationProviderClient 객체를 사용하여 마지막으로 알려진 위치를 가져옵니다.
+        // FusedLocationProviderClient 객체를 사용하여 마지막으로 알려진 위치를 가져오기
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
                         // 마지막으로 알려진 위치가 있을 경우 처리합니다.
                         handleLocation(location);
                     } else {
-                        // 마지막으로 알려진 위치가 없는 경우 새로운 위치 업데이트를 요청합니다.
+                        // 마지막으로 알려진 위치가 없는 경우 새로운 위치 업데이트를 요청
                         requestNewLocation();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure to get last known location
-                    Toast.makeText(this, "Failed to get last known location", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "getLastKnownLocation: " + e.getMessage());
                 });
     }
 
     private void requestNewLocation() {
-        // 위치 업데이트 요청을 시작합니다.
+        // 위치 업데이트 요청을 시작
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // 위치 권한이 없으면 권한을 요청합니다.
+            // 위치 권한이 없으면 권한을 요청
             requestLocationPermission();
             return;
         }
@@ -243,10 +243,10 @@ public class GoggleMabView extends AppCompatActivity implements OnMapReadyCallba
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new android.location.LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                // 새로운 위치가 업데이트되면 처리합니다.
+                // 새로운 위치가 업데이트되면 처리
                 handleLocation(location);
 
-                // 위치 업데이트를 더 이상 필요하지 않을 경우 위치 업데이트를 중지합니다.
+                // 위치 업데이트를 더 이상 필요하지 않을 경우 위치 업데이트를 중지
                 locationManager.removeUpdates(this);
             }
 
@@ -262,7 +262,7 @@ public class GoggleMabView extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void handleLocation(Location location) {
-        // 위치를 처리하는 코드를 여기에 작성합니다.
+        // 위치를 처리하는 코드를 여기에 작성
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
         currentMarker = mMap.addMarker(new MarkerOptions().position(currentLatLng).title("현재 위치").draggable(true));

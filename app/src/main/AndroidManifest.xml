@@ -34,9 +34,6 @@
             android:name=".Fragment.GoggleMabView"
             android:exported="false" />
         <activity
-            android:name=".Fragment.NaverMapView"
-            android:exported="false" />
-        <activity
             android:name=".Fragment.ProductDetail"
             android:exported="false" />
         <activity

@@ -80,13 +80,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
 
-                // 프로필 이미지 URL이 null이 아니거나 비어 있지 않을 때만 처리
+
                 if (message.getProfileImageUrl() != null && !message.getProfileImageUrl().isEmpty()) {
                     Glide.with(context).load(message.getProfileImageUrl())
                             .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                             .into(holder.circleImageView);
                 } else {
-                    // 프로필 이미지 URL을 사용할 수 없는 경우, 기본 플레이스홀더 이미지를 설정
+
                     Glide.with(context).load(R.drawable.profile)
                             .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                             .into(holder.circleImageView);
@@ -124,7 +124,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                             .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                             .into(holder.circleChatImageView);
                 } else {
-                    // 프로필 이미지 URL을 사용할 수 없는 경우, 기본 플레이스홀더 이미지를 설정
+
                     Glide.with(context).load(R.drawable.profile)
                             .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                             .into(holder.circleChatImageView);

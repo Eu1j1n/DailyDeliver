@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,7 +73,7 @@ public class UserProfileFragment extends Fragment {
 
     private ActivityResultLauncher<Intent> activityResultLauncher;
 
-    String baseUri = "http://52.79.88.52";
+    String baseUri = "http://43.201.32.122";
     static String TAG = "프로필 액티비티 프래그먼트";
     private String loginType = ""; // 로그인 타입 변수 추가
 
@@ -111,6 +112,9 @@ public class UserProfileFragment extends Fragment {
 
             String timestamp = String.valueOf(System.currentTimeMillis());
             String imageFileName = receiveID + "_" + timestamp + ".jpg";
+
+            Log.d(TAG, "imageFileName" + imageFileName);
+
             Log.d(TAG, "receiveID 값" + receiveID);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
@@ -204,39 +208,57 @@ public class UserProfileFragment extends Fragment {
         Button logoutButton = view.findViewById(R.id.Logout);
         Button rechargeCredit = view.findViewById(R.id.rechargeCredit);
 
+
+
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent intent = result.getData();
-                    selectedImageUri = intent.getData();
-                    Log.d(TAG, "카메라나 앨범 사진 등록 selectedImageUri 값: " + selectedImageUri);
-                    if (selectedImageUri != null) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("프로필 이미지 변경")
-                                .setMessage("선택한 이미지로 프로필을 변경하시겠습니까?")
-                                .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Bundle args = getArguments();
-                                        receiveID = args.getString("아이디 값");
-                                        Glide.with(getActivity()).clear(profileImage);
-                                        uploadProfileImage(selectedImageUri, receiveID, view);
-                                    }
-                                })
-                                .setNegativeButton("아니오", null)
-                                .show();
-                    }
-                }
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Bundle extras = result.getData().getExtras();
-                    if (extras != null) {
-                        bitmap = (Bitmap) extras.get("data");
-                        profileImage.setImageBitmap(bitmap);
+                    if (intent != null) {
+
+                        selectedImageUri = intent.getData();
+                        if (selectedImageUri != null) {
+                            // 앨범에서 선택한 이미지인 경우
+                            // 이미지를 서버에 업로드
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("프로필 사진 변경")
+                                    .setMessage("프로필 사진을 변경하시겠습니까?")
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            uploadProfileImage(selectedImageUri, receiveID, view);
+                                        }
+                                    })
+                                    .setNegativeButton("아니오", null)
+                                    .show();
+                        } else {
+                            // 카메라로 찍은 이미지인 경우
+                            // 이미지를 파일로 저장하고 해당 파일의 Uri를 가져옵니다.
+                            File imageFile = saveImageFromCamera(intent);
+                            if (imageFile != null) {
+                                selectedImageUri = Uri.fromFile(imageFile);
+                                // 파일로 저장한 이미지를 서버에 업로드하기 전에 사용자에게 물어봅니다.
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("프로필 사진 변경")
+                                        .setMessage("프로필 사진을 변경하시겠습니까?")
+                                        .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                uploadProfileImage(selectedImageUri, receiveID, view);
+                                            }
+                                        })
+                                        .setNegativeButton("아니오", null)
+                                        .show();
+                            }
+                        }
                     }
                 }
             }
         });
+
+
+
 
         Bundle args = getArguments();
 
@@ -318,20 +340,17 @@ public class UserProfileFragment extends Fragment {
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
                                         case 0:
-                                            if (ContextCompat.checkSelfPermission(
-                                                    getActivity(), android.Manifest.permission.CAMERA)
-                                                    != PackageManager.PERMISSION_GRANTED) {
-                                                ActivityCompat.requestPermissions(
-                                                        getActivity(),
-                                                        new String[]{android.Manifest.permission.CAMERA},
-                                                        CAMERA_PERMISSION_CODE);
+                                            // 카메라로 촬영하는 경우
+                                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
                                             } else {
                                                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                                 activityResultLauncher.launch(cameraIntent);
                                             }
                                             break;
                                         case 1:
-                                            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                            // 앨범에서 선택하는 경우
+                                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                                                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
                                             }
                                             Intent intent = new Intent(Intent.ACTION_PICK);
@@ -340,8 +359,41 @@ public class UserProfileFragment extends Fragment {
                                             activityResultLauncher.launch(intent);
                                             break;
                                         case 2:
-                                            selectedImageUri = null;
-                                            profileImage.setImageResource(R.drawable.profile);
+                                            // 기본 이미지로 변경하는 경우
+                                            // 기본 이미지로 변경할지 다시 한 번 확인하는 다이얼로그 표시
+                                            AlertDialog.Builder confirmationDialog = new AlertDialog.Builder(getActivity());
+                                            confirmationDialog.setTitle("기본 이미지로 변경")
+                                                    .setMessage("기본 이미지로 변경하시겠습니까?")
+                                                    .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            // 기본 이미지로 변경하는 API 호출 및 이미지 설정
+                                                            ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+                                                            Call<Void> call = apiService.updateBasicImage(receiveID);
+                                                            call.enqueue(new Callback<Void>() {
+                                                                @Override
+                                                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                                                    if (response.isSuccessful()) {
+                                                                        // 이미지 업데이트 성공
+                                                                        selectedImageUri = null;
+                                                                        profileImage.setImageResource(R.drawable.profile);
+                                                                        Toast.makeText(getActivity(), "프로필 이미지가 기본 이미지로 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                                                                    } else {
+                                                                        // 이미지 업데이트 실패
+                                                                        Toast.makeText(getActivity(), "프로필 이미지 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onFailure(Call<Void> call, Throwable t) {
+                                                                    // 네트워크 오류 발생
+                                                                    Toast.makeText(getActivity(), "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                        }
+                                                    })
+                                                    .setNegativeButton("아니오", null)
+                                                    .show();
                                             break;
                                     }
                                 }
@@ -391,6 +443,46 @@ public class UserProfileFragment extends Fragment {
 
         return view;
     }
+
+    private File saveImageFromCamera(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            // 카메라로부터 받은 이미지를 비트맵으로 변환합니다.
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            // 비트맵을 파일로 저장합니다.
+            return saveBitmapToFile(imageBitmap);
+        }
+        return null;
+    }
+
+
+    private File saveBitmapToFile(Bitmap bitmap) {
+        // 외부 저장소에 저장할 파일명 생성
+        String filename = "image_" + System.currentTimeMillis() + ".jpg";
+
+        // 외부 저장소에 파일을 저장하기 위한 File 객체 생성
+        File externalFilesDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(externalFilesDir, filename);
+
+        try {
+            // 파일 출력 스트림 생성
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+
+            // Bitmap을 JPEG 형식으로 압축하여 파일에 저장
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
+            // 파일 출력 스트림 닫기
+            outputStream.close();
+
+            // 저장된 파일의 Uri를 반환
+            return imageFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

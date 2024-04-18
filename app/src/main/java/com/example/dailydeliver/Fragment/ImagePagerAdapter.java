@@ -15,7 +15,7 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Im
     private List<String> imageUrls;
     private Context context;
 
-    private String serverImageUri = "http://52.79.88.52/postImage/";
+    private String serverImageUri = "http://43.201.32.122/postImage/";
 
     // 이미지 클릭을 처리하는 리스너 인터페이스 정의
     public interface OnImageClickListener {

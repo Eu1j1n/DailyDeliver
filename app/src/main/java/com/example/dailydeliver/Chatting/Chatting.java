@@ -87,7 +87,7 @@ public class Chatting extends AppCompatActivity {
     private BottomSheetDialog dialog;
 
 
-    private String ip = "52.79.88.52";
+    private String ip = "43.201.32.122";
     private int port = 8888;
     private ImageButton quit;
 
@@ -110,7 +110,7 @@ public class Chatting extends AppCompatActivity {
     private String receivedID;
     ImageButton plusButton;
 
-    String baseUri = "http://52.79.88.52";
+    String baseUri = "http://43.201.32.122";
 
     int PICK_IMAGE_REQUEST = 1;
 
@@ -136,7 +136,16 @@ public class Chatting extends AppCompatActivity {
         loginType = intent.getStringExtra("loginType");
         Log.d(TAG, "loginType" + loginType);
         Log.d(TAG, "kakaImageUrl" + kakaoImageUrl);
-        textViewChatname.setText(roomName);
+
+        String[] splitRoomName = roomName.split("01072047094");
+        if (splitRoomName.length == 2) {
+            String otherName = splitRoomName[1].trim();
+            Log.d(TAG, "otherName" + otherName);
+            textViewChatname.setText(otherName);
+        } else {
+            Log.d(TAG, "ERROR");
+        }
+
 
         getChatHistory(roomName);
 
@@ -469,20 +478,17 @@ public class Chatting extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    // 성공적으로 서버에 요청을 보냈습니다.
-                    // 여기에 성공 시 수행할 작업을 추가하세요.
+
                     Log.d(TAG, "읽음 상태 업데이트 다함");
                 } else {
-                    // 서버에서 오류가 발생했습니다.
-                    // 여기에 실패 시 수행할 작업을 추가하세요.
+
                     Log.d(TAG, "읽음 상태 업데이트 실패");
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                // 서버와의 통신에 실패했습니다.
-                // 여기에 통신 실패 시 수행할 작업을 추가하세요.
+
                 Log.d(TAG, "읽음 상태 네트워크 실패");
             }
         });
@@ -712,7 +718,7 @@ public class Chatting extends AppCompatActivity {
     private void sendImageMessage(String fileName) {
         long messageID = generateMessageId(); //  return System.currentTimeMillis();
         String messageIdAsString = String.valueOf(messageID);
-        // 이미지가 업로드되었음을 나타내는 메시지를 생성합니다.
+        // 이미지가 업로드되었음을 나타내는 메시지를 생성
         String messageToSend = roomName + ">" + receivedID + ">" + fileName + ">" + messageIdAsString;
 
         new Thread(new Runnable() {
