@@ -1,0 +1,258 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <!-- 이미지 버튼(뒤로 가기 버튼) -->
+
+
+            <!-- 텍스트뷰로 "프로필" 표시 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="프로필"
+                android:layout_marginLeft="170dp"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                android:textColor="@android:color/black"/>
+
+            <!-- 여기에 필요한 여백이 있다면 추가하세요 -->
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- 서클 이미지뷰 -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_marginTop="10dp"
+                android:layout_width="100dp"
+                android:layout_marginStart="10dp"
+                android:layout_height="120dp"
+                android:src="@drawable/profile"
+                app:civ_border_width="2dp"
+                android:layout_gravity="center"
+                app:civ_border_color="#FF000000"/>
+
+            <!-- 닉네임 텍스트뷰 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <!-- 닉네임 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="18sp"
+                    android:text="사용자 닉네임" />
+
+                <!-- 로그아웃 버튼 -->
+                <android.widget.Button
+                    android:id="@+id/kakaoLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:visibility="gone"
+                    android:background="@drawable/green_button"
+                    android:text="로그아웃" />
+
+                <android.widget.Button
+                    android:id="@+id/Logout"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:visibility="visible"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/green_button"
+                    android:text="로그아웃" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- 코인 이미지 -->
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="170dp"
+                android:src="@drawable/coin" />
+
+            <!-- 남은 머니 텍스트뷰 -->
+            <TextView
+                android:id="@+id/remainingMoney"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:text="0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <android.widget.Button
+                android:background="@drawable/green_button"
+                android:id="@+id/rechargeCredit"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:text="크레딧 충전" />
+
+            <android.widget.Button
+                android:background="@drawable/green_button"
+                android:id="@+id/exchangeCredit"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="30dp"
+                android:layout_height="wrap_content"
+                android:text="크레딧 환전" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center">
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/myDeals"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="나의 거래" />
+
+            <LinearLayout
+                android:id="@+id/layoutMyDeals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <!-- 이미지뷰 -->
+                <ImageView
+                    android:id="@+id/imageMyDeals"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_heart"
+                    android:layout_marginRight="5dp"/>
+
+                <!-- 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/myfavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="관심 목록" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/please"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:gravity="center_vertical">
+
+                <!-- 이미지뷰 -->
+                <ImageView
+                    android:id="@+id/pleaseImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/please"
+                    android:layout_marginRight="5dp"/>
+
+                <!-- 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/pleaseTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="해주십쇼 List" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:gravity="center_vertical">
+
+                <!-- 이미지뷰 -->
+                <ImageView
+                    android:id="@+id/orderImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/success"
+                    android:layout_marginRight="5dp"/>
+
+                <!-- 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/orderTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="심부름 완료 List" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- 리사이클러뷰 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/my_please_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

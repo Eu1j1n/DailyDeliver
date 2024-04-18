@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/dialog_recharge_credit.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="크레딧 충전하기"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 체크박스 목록 -->
+    <CheckBox
+        android:id="@+id/checkbox_option1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 9000 / 10,000원" />
+
+    <CheckBox
+        android:id="@+id/checkbox_option2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 19,900 / 19,900원" />
+
+    <CheckBox
+        android:id="@+id/checkbox_option3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 29,000 / 30,000원" />
+
+    <CheckBox
+        android:id="@+id/checkbox_option4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 49,000 / 49,000원" />
+
+    <CheckBox
+        android:id="@+id/checkbox_option5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 99,000 / 100,000원" />
+
+    <CheckBox
+        android:id="@+id/checkbox_option6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Credit 199,000 / 200,000원" />
+
+    <!-- 버튼 (가운데 정렬) -->
+    <Button
+        android:id="@+id/kakaoPayButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="카카오페이 결제하기"
+        android:textSize="15sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

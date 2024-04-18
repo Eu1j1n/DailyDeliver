@@ -1,0 +1,32 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--    하단바에 들어갈 문자들 설정 -->
+    <item
+        android:id="@+id/bottom_home"
+        android:enabled="true"
+        android:icon="@drawable/ic_home_foreground"
+        android:title="홈" />
+
+    <item
+        android:id="@+id/bottom_chat"
+        android:enabled="true"
+        android:title="채팅"
+        android:icon="@drawable/ic_chat_foreground"
+        />
+
+    <item
+
+        android:id="@+id/bottom_add"
+        android:enabled="true"
+        android:title="심부름 등록"
+
+        />
+
+    <item
+        android:id="@+id/bottom_mypage"
+        android:enabled="true"
+        android:title="마이페이지"
+        android:icon="@drawable/ic_mypage_foreground"
+        />
+</menu>

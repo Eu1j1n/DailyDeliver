@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">DailyDeliver</string>
+
+    <string-array name="bank_names">
+        // 산업, 수협, 신한, 우리, 우체국, 하나, 한국씨티, SC제일, 카카오뱅크, 케이뱅크, 토스뱅크, 경남, 광주, 대구, 부산, 전북, 제주, 저축, 산림조합,
+        새마을, 신협
+        <item>KB국민</item>
+        <item>기업</item>
+        <item>농협</item>
+        <item>산업</item>
+        <item>수협</item>
+        <item>신한</item>
+        <item>우리</item>
+        <item>우체국</item>
+        <item>하나</item>
+        <item>한국씨티</item>
+        <item>SC제일</item>
+        <item>카카오뱅크</item>
+        <item>케이뱅크</item>
+        <item>토스뱅크</item>
+        <item>경남</item>
+        <item>광주</item>
+        <item>대구</item>
+        <item>부산</item>
+        <item>전북</item>
+        <item>제주</item>
+        <item>저축</item>
+        <item>산림조합</item>
+        <item>새마을</item>
+        <item>신협</item>
+
+
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_other_message">otherMessage</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>

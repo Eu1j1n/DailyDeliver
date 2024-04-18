@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/register_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageButton
+        android:id="@+id/backbtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="start"
+        android:src="@drawable/backbutton_foreground"
+        android:background="@color/white"
+        android:contentDescription="뒤로가기 버튼"
+        android:padding="7dp" />
+
+   <de.hdodenhof.circleimageview.CircleImageView
+       android:layout_width="80dp"
+       android:id="@+id/profileImage"
+       android:layout_height="80dp"
+       android:src="@drawable/profile"
+       app:civ_border_width="2dp"
+       android:layout_gravity="center"
+
+       app:civ_border_color="#FF000000"/>
+
+    <EditText
+        android:id="@+id/editUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="이름을 입력하세요"
+        android:padding="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editID"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="ID (아이디는 영문과 숫자 조합이어야 합니다)"
+            android:inputType="textEmailAddress"
+            android:padding="10dp" />
+
+        <android.widget.Button
+            android:id="@+id/checkIdButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/green_button"
+            android:padding="10dp"
+            android:text="ID 중복확인" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/editPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="비밀번호 입력(비밀번호는 대문자 하나, 영문, 특수문자, 숫자 포함 9자 이상이어야 합니다.)"
+        android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <EditText
+        android:id="@+id/checkPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="비밀번호 확인"
+        android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <TextView
+        android:id="@+id/noMatchPasswordMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="비밀번호가 일치하지 않습니다."
+        android:textColor="#FF0000"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/matchPasswordMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="비밀번호가 일치합니다."
+        android:textColor="#0000FF"
+        android:visibility="gone" />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editaddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:editable="false"
+            android:focusable="false"
+            android:hint="주소를 입력하세요"
+            android:padding="10dp" />
+
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+
+
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/remainaddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="나머지 주소를 입력하세요(선택 사항)"
+        android:padding="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/phoneNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="휴대폰 번호를 입력하세요"
+            android:padding="10dp" />
+
+
+
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+
+
+        <android.widget.Button
+            android:id="@+id/phoneNumberCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인증 확인"
+            android:background="@drawable/green_button"
+            android:padding="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/bankSpinner"
+            android:layout_width="120dp"
+            android:layout_height="51dp"
+            android:layout_gravity="center_vertical"
+
+            android:padding="10dp" />
+
+        <EditText
+            android:id="@+id/account"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="계좌번호를 입력하세요"
+            android:padding="10dp" />
+
+
+
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+
+
+
+    </LinearLayout>
+
+
+
+
+    <android.widget.Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="회원가입"
+
+        android:textColor="@android:color/white"
+        android:background="@drawable/green_button"
+        android:padding="12dp" />
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+
+
+
+
+</LinearLayout>

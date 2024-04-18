@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="recharge_options">
+        <item>$9.99</item>
+        <item>$19.99</item>
+        <!-- 다른 결제 옵션 항목 추가 -->
+    </array>
+</resources>

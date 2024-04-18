@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "624650876354",
+    "project_id": "dailydeliver-b80fd",
+    "storage_bucket": "dailydeliver-b80fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624650876354:android:12fd8a4da9852b0133d25b",
+        "android_client_info": {
+          "package_name": "com.example.dailydeliver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcCxJx2aAOBRLf7YFx6KfjITsm7wVSzMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

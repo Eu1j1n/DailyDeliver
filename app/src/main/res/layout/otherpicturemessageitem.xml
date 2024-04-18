@@ -1,0 +1,76 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/chatImageProfileImage"
+        android:src="@drawable/profile"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/other_txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="상대방 이름"
+            android:text="상대방 이름"
+            android:layout_marginLeft="15dp"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/other_img_message"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+
+            android:layout_marginTop="4dp"
+            android:scaleType="fitCenter" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/blank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="시간"
+                android:text="오전 10:23"
+                android:textSize="10dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/other_txt_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:contentDescription="시간"
+        android:text="오전 10:23"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/other_img_txt_isShown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="1"
+        android:textColor="#FFBE3C"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="150dp"
+        />
+</LinearLayout>

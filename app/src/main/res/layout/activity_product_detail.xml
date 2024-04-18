@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/priceAndChatLayout">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- ViewPager -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="400dp" />
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/backbutton_foreground" />
+
+            <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/circleIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/contentLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp" />
+
+            <!-- 나머지 내용을 담는 LinearLayout -->
+            <LinearLayout
+                android:id="@+id/contentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/viewPager">
+
+                <!-- CircleImageView와 닉네임, 위치를 담는 수평 LinearLayout -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- CircleImageView -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profileImageView"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/profile" />
+
+                    <!-- 닉네임과 위치를 담는 수직 LinearLayout -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- 닉네임 텍스트뷰 -->
+                        <TextView
+                            android:id="@+id/nicknameTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="닉네임"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- 위치 텍스트뷰 -->
+                        <TextView
+                            android:id="@+id/locationTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="위치"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 제목 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="16dp"
+                    android:text="제목"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <!-- 시간 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/timeTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="시간"
+                    android:textSize="13sp"
+                    android:layout_marginTop="13dp" />
+
+                <!-- 설명 내용 텍스트뷰 -->
+                <TextView
+                    android:id="@+id/descriptionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="설명 내용"
+                    android:textSize="20sp"
+                    android:layout_marginTop="13dp" />
+
+                <TextView
+                    android:id="@+id/detailAdress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="상세 주소 :"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:layout_marginTop="13dp" />
+
+                <ImageButton
+                    android:id="@+id/expansionMapButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/expansiongooglemap"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/productDetailMapView"
+                    android:layout_gravity="end"/>
+
+                <!-- 여백을 위한 하얀색 바탕의 뷰 -->
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/productDetailMapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                     />
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="※ 지도가 로딩이 안될시에는 지도를 한번 클릭하거나,
+                                  확대버튼을 누르세요."
+></TextView>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="@android:color/white" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+    <!-- 가격 텍스트뷰와 채팅 버튼 -->
+    <LinearLayout
+        android:id="@+id/priceAndChatLayout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <!-- 가격 텍스트뷰 -->
+        <TextView
+            android:id="@+id/priceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="15dp"
+            android:text="가격"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:shadowColor="@android:color/darker_gray"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
+
+        <!-- 채팅 버튼 -->
+        <android.widget.Button
+            android:id="@+id/chatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/green_button"
+            android:text="채팅하기" />
+    </LinearLayout>
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_above="@id/priceAndChatLayout" />
+</RelativeLayout>
