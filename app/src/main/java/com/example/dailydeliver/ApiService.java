@@ -4,6 +4,7 @@ import com.example.dailydeliver.Chatting.ChatMessage;
 import com.example.dailydeliver.Chatting.Message;
 import com.example.dailydeliver.Fragment.HomeData;
 import com.example.dailydeliver.Fragment.PostDetailData;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -28,10 +29,25 @@ public interface ApiService {
 
 
     @FormUrlEncoded
+    @POST("sendChatRoomList.php")
+    Call<JsonArray> getChatRoomList(
+            @Field("userID") String receivedID
+    );
+
+    @FormUrlEncoded
     @POST("updateBasicImage.php")
     Call<Void> updateBasicImage(@Field("receiveID") String receiveID);
 
+    @GET("getToken.php")
+    Call<JsonObject> getToken(@Query("orderPeople") String orderPeople);
 
+
+    @POST("receiveFCM.php")
+    @FormUrlEncoded
+    Call<ResponseBody> sendFCMToken(
+            @Field("userID") String userID,
+            @Field("token") String token
+    );
 
 
     @GET("sendPostDetail.php")
@@ -45,8 +61,10 @@ public interface ApiService {
 
     @GET("send_post.php")
     Call<List<HomeData>> getPosts();
+
     @Multipart
-    @POST("uploadPostImage.php") // 서버 업로드 API 엔드포인트
+    @POST("uploadPostImage.php")
+        // 서버 업로드 API 엔드포인트
     Call<ResponseBody> uploadPostImage(
             @Part MultipartBody.Part imagePart,
             @Part("receiveID") RequestBody userId
@@ -87,8 +105,6 @@ public interface ApiService {
     );
 
 
-
-
     @POST("readStatus.php")
     @FormUrlEncoded
     Call<Void> updateReadStatus(@Field("roomName") String roomName);
@@ -109,7 +125,8 @@ public interface ApiService {
             @Field("receiveID") String receiveID);
 
     @FormUrlEncoded
-    @POST("login.php") //
+    @POST("login.php")
+        //
     Call<ResponseBody> loginUser(
             @Field("receiveID") String receiveID,
             @Field("receivePassword") String receivePassword);
@@ -119,17 +136,17 @@ public interface ApiService {
     Call<ImageResponse> getImageFileName(@Field("receiveID") String receiveID);
 
     @Multipart
-    @POST("editImage.php") // 서버 업로드 API 엔드포인트
+    @POST("editImage.php")
+        // 서버 업로드 API 엔드포인트
     Call<ResponseBody> editImage(
             @Part MultipartBody.Part imagePart,
             @Part("receiveID") RequestBody userId
     );
 
 
-
-
     @FormUrlEncoded
-    @POST("register.php") // 실제 서버의 PHP 스크립트 경로
+    @POST("register.php")
+        // 실제 서버의 PHP 스크립트 경로
     Call<ResponseBody> registerUser(
 
             @Field("name") String name,
@@ -150,9 +167,9 @@ public interface ApiService {
 
 
 
-
     @Multipart
-    @POST("uploadProfileImage.php") // 서버 업로드 API 엔드포인트
+    @POST("uploadProfileImage.php")
+        // 서버 업로드 API 엔드포인트
     Call<ResponseBody> uploadImage(
             @Part MultipartBody.Part imagePart,
             @Part("receiveID") RequestBody userId
@@ -167,12 +184,5 @@ public interface ApiService {
     );
 
 
-
-
-
-
-
-
-
-
 }
+

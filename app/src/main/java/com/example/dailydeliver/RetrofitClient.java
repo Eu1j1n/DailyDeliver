@@ -1,5 +1,8 @@
 package com.example.dailydeliver;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -15,19 +18,22 @@ public class RetrofitClient {
     public static Retrofit getClient(String baseUrl) {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) // 연결 시간 초과
-                    .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) // 읽기 시간 초과
-                    .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) // 쓰기 시간 초과
+                    .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .build();
+
+            Gson gson = new GsonBuilder().setLenient().create(); // Gson 객체 생성 및 설정 추가
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(baseUrl)
-                    .client(client) // OkHttpClient 설정 추가
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create(gson)) // Gson 설정 추가
                     .build();
         }
         return retrofit;
     }
+
 
     public static Retrofit getClient() {
         return getClient(BASE_URL);

@@ -9,6 +9,8 @@ public class ChatRoomItem {
 
     private String messageTime;
 
+    private String hideRoomName;
+
     public int getMessageCount() {
         return messageCount;
     }

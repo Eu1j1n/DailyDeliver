@@ -37,6 +37,7 @@ import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.JsonObject;
 
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
@@ -78,7 +79,6 @@ public class Chatting extends AppCompatActivity {
 
     InetAddress serverAddr;
 
-    TextView date;
 
     Socket socket;
 
@@ -89,30 +89,26 @@ public class Chatting extends AppCompatActivity {
 
     private String ip = "43.201.32.122";
     private int port = 8888;
-    private ImageButton quit;
+    private ImageButton quit, plusButton;
 
     String TAG = "채팅방 액티비티";
-    String roomName;
 
-    TextView textViewChatname;
 
-    String profileImageUrl;
+    TextView textViewChatname, date;
 
-    String kakaoImageUrl;
+    String profileImageUrl, kakaoImageUrl,loginType, read, roomName, receivedID, receiver
+           ;
 
-    String loginType;
+    private String otherPeopleToken;
 
-    String read;
     private RecyclerView recyclerView;
 
     private WebSocketClient webSocketClient;
 
-    private String receivedID;
-    ImageButton plusButton;
-
     String baseUri = "http://43.201.32.122";
 
     int PICK_IMAGE_REQUEST = 1;
+
 
     private List<com.example.dailydeliver.Chatting.Message> messageList;
 
@@ -137,7 +133,14 @@ public class Chatting extends AppCompatActivity {
         Log.d(TAG, "loginType" + loginType);
         Log.d(TAG, "kakaImageUrl" + kakaoImageUrl);
 
+
         String[] splitRoomName = roomName.split("01072047094");
+        receiver = splitRoomName[1];
+
+        getToken(receiver);
+
+
+        // [1]은 나의 아이디 [2]는 상대 아이디임.
         if (splitRoomName.length == 2) {
             String otherName = splitRoomName[1].trim();
             Log.d(TAG, "otherName" + otherName);
@@ -455,6 +458,38 @@ public class Chatting extends AppCompatActivity {
             });
         }
     }
+    private void getToken(String orderPeople) {
+        // Retrofit 인터페이스 생성
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+
+        // 특정 사용자의 토큰을 가져오기 위한 API 호출
+        Call<JsonObject> call = apiService.getToken(orderPeople);
+
+        // 비동기적으로 API 호출
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    // 응답을 JsonObject로 받음
+                    JsonObject jsonObject = response.body();
+                    // JsonObject에서 토큰 값 추출
+                    otherPeopleToken = jsonObject.get("token").getAsString();
+                    Log.d(TAG, "상대방 토큰" + otherPeopleToken);
+                    // 토큰을 사용하여 원하는 작업 수행
+                } else {
+                    // API 호출에 실패한 경우
+                    Log.e(TAG, "토큰을 가져오는 데 실패했습니다.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                // 네트워크 오류 등으로 API 호출에 실패한 경우
+                Log.e(TAG, "토큰을 가져오는 데 실패했습니다.", t);
+            }
+        });
+    }
+
 
 
 

@@ -79,12 +79,15 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
 
         TextView messageCount;
 
+        TextView hideRealRoomName;
+
         public ChatRoomViewHolder(@NonNull View itemView) {
             super(itemView);
             txtChatName = itemView.findViewById(R.id.chatName);
             txtLastMessage = itemView.findViewById(R.id.lastMessage);
             messageCount = itemView.findViewById(R.id.messageCount);
             messageTime = itemView.findViewById(R.id.messageTime);
+            hideRealRoomName = itemView.findViewById(R.id.hideRealRoomName);
 
         }
     }

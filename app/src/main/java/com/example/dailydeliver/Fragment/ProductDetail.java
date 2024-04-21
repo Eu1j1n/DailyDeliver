@@ -26,7 +26,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.naver.maps.geometry.LatLng;
+
 
 import java.io.IOException;
 import java.util.ArrayList;

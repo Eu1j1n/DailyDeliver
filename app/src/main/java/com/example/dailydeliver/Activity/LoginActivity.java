@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -67,45 +68,27 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-
         findViewByID();
-
 
         getHashKey();
 
-        // 퍼미션 체크 및 요청
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            // 퍼미션 요청
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_CODE);
-        } else {
-            // 이미 허용된 경우 처리 로직 실행
-        }
+        // 알림 권한 요청
+        requestNotificationPermissions();
 
-
-        Function2<OAuthToken,Throwable, Unit> callback =new Function2<OAuthToken, Throwable, Unit>() {
+        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
             @Override
-            // 콜백 메서드 ,
             public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                Log.e(TAG,"CallBack Method");
+                Log.e(TAG, "CallBack Method");
                 //oAuthToken != null 이라면 로그인 성공
-                if(oAuthToken!=null){
+                if (oAuthToken != null) {
                     Log.d(TAG, "여기 들어옴? kakao");
                     updateKakaoLoginUi();
                     Intent intent = new Intent(LoginActivity.this, user_profile.class);
                     startActivity(intent);
                     finish();
-
-
-
-                }else {
+                } else {
                     //로그인 실패
-                    Log.e(TAG, "invoke: login fail" );
+                    Log.e(TAG, "invoke: login fail");
                     Toast.makeText(LoginActivity.this, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -113,37 +96,26 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-
-
-
-
-
-
         KakaoSdk.init(this, "20458c53f41feddbd90e4c7bc58dddda");
-
 
         kakaoLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // 해당 기기에 카카오톡이 설치되어 있는 확인
-                if(UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)){
+                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)) {
                     UserApiClient.getInstance().loginWithKakaoTalk(LoginActivity.this, callback);
-                }else{
+                } else {
                     // 카카오톡이 설치되어 있지 않다면
                     UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this, callback);
                 }
             }
         });
 
-
-
         sign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, JoinActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -168,14 +140,13 @@ public class LoginActivity extends AppCompatActivity {
                                     // 성공 처리 (ID 사용 가능)
                                     Toast.makeText(LoginActivity.this, "로그인에 성공했습니다.", Toast.LENGTH_SHORT).show();
 
+                                    // 아이디와 토큰을 서버에 보내기
+                                    sendTokenToServer(receiveID);
+
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-
-
                                     intent.putExtra("아이디 값", receiveID); // 원하는 데이터를 추가
                                     intent.putExtra("logintype", "general");
-
                                     startActivity(intent);
-
                                     finish();
                                 } else if (responseBody.equals("fail")) {
                                     // 실패 처리 (ID 중복)
@@ -196,26 +167,49 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         // 네트워크 오류 등 실패 처리
-                        Log.e(TAG, "중복확인 에러 = " + t.getMessage());
+                        Log.e(TAG, "로그인 에러: " + t.getMessage());
                         Toast.makeText(LoginActivity.this, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
     }
-    protected void findViewByID() {
 
+    protected void findViewByID() {
         appLogo = findViewById(R.id.appLogo);
         kakaoLoginButton = findViewById(R.id.kakaobtn);
         sign = findViewById(R.id.sign);
         editID = findViewById(R.id.editID);
         editPassword = findViewById(R.id.editPassword);
         loginButton = findViewById(R.id.loginButton);
-
-
     }
 
-    protected  void getHashKey() {
+    private void sendTokenToServer(String receivedID) {
+        SharedPreferences preferences = getSharedPreferences("FCM_PREF", MODE_PRIVATE);
+        String fcmToken = preferences.getString("FCM_TOKEN", "");
+
+        Log.d(TAG, "fcmToken" + fcmToken);
+
+        // 토큰을 서버에 전송하는 HTTP 요청을 생성
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+        Call<ResponseBody> call = apiService.sendFCMToken(receivedID, fcmToken);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, "onResponse: 성공");
+                // 서버 응답 처리
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "onFailure: 실패");
+                // 네트워크 오류 등 실패 처리
+            }
+        });
+    }
+
+    protected void getHashKey() {
         PackageInfo packageInfo = null;
         try {
             packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
@@ -235,8 +229,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-    private void updateKakaoLoginUi() {
 
+    private void updateKakaoLoginUi() {
         // 로그인 여부에 따른 UI 설정
         UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
             @Override
@@ -260,30 +254,31 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                     Log.d(TAG, "profileImageUrl 값" + profileImageUrl);
-                   // 프로필 이미지 URL도 전달
+                    // 프로필 이미지 URL도 전달
 
                     // 액티비티 전환
-
-
                     // 유저의 아이디
-
-
-
                 } else {
-
-
                 }
                 return null;
             }
         });
     }
 
-
+    private void requestNotificationPermissions() {
+        // 퍼미션 체크 및 요청
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // 퍼미션 요청
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_REQUEST_CODE);
+        } else {
+            // 이미 허용된 경우 처리 로직 실행
+        }
+    }
 }
-
-
-
-
-
-
-

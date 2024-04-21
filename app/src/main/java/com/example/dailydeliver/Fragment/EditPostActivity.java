@@ -41,7 +41,7 @@ import com.example.dailydeliver.ApiService;
 
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
-import com.naver.maps.map.MapView;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
