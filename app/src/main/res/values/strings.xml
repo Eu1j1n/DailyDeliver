@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">DailyDeliver</string>
 
+    <string name="channel_name">My Notification Channel</string>
+    <string name="channel_description">Description of My Notification Channel</string>
+
+
     <string-array name="bank_names">
         // 산업, 수협, 신한, 우리, 우체국, 하나, 한국씨티, SC제일, 카카오뱅크, 케이뱅크, 토스뱅크, 경남, 광주, 대구, 부산, 전북, 제주, 저축, 산림조합,
         새마을, 신협

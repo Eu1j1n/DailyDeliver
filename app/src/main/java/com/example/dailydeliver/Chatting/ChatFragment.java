@@ -1,7 +1,10 @@
 package com.example.dailydeliver.Chatting;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -48,8 +51,6 @@ public class ChatFragment extends Fragment {
 
     String baseUri = "http://43.201.32.122";
 
-
-
     private String receivedID;
     private String loginType;
     private String kakaoProfileImageUrl;
@@ -58,7 +59,28 @@ public class ChatFragment extends Fragment {
     private String ip = "52.79.88.52";
     private int port = 8888;
 
+    // BroadcastReceiver 정의
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "여기들어오냐");
+            if ("MESSAGE_RECEIVED".equals(intent.getAction())) {
+                // 데이터 받기
+                String senderID = intent.getStringExtra("senderID");
+                String messageContent = intent.getStringExtra("messageContent");
+                String time = intent.getStringExtra("time");
+                String roomName = intent.getStringExtra("roomName");
 
+                Log.d(TAG, "senderID" + senderID);
+                Log.d(TAG, "roomName" + roomName);
+
+                // 채팅방 아이템 생성 및 추가
+                ChatRoomItem newItem = new ChatRoomItem(senderID, messageContent, null, 0, time, roomName);
+                chatRoomItems.add(newItem);
+                chatAdapter.notifyItemInserted(chatRoomItems.size() - 1);
+            }
+        }
+    };
 
     public ChatFragment() {
         chatRoomItems = new ArrayList<>();
@@ -73,27 +95,24 @@ public class ChatFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
-
-
         recyclerView.addItemDecoration(dividerItemDecoration);
-        //구분선
+
         chatAdapter = new ChatRoomAdapter(getContext(), chatRoomItems);
         recyclerView.setAdapter(chatAdapter);
 
+        // BroadcastReceiver 등록
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("MESSAGE_RECEIVED");
+        requireActivity().registerReceiver(receiver, intentFilter);
 
-
-
-
-        chatAdapter.setOnItemClickListener(position -> { //채팅방 들어가는 거
+        chatAdapter.setOnItemClickListener(position -> {
             ChatRoomItem clickedChatRoom = chatRoomItems.get(position);
             Intent intent = new Intent(getActivity(), Chatting.class);
             intent.putExtra("id", receivedID);
             intent.putExtra("loginType", loginType);
             intent.putExtra("kakaoUrl", kakaoProfileImageUrl);
-            intent.putExtra("roomName", clickedChatRoom.getChatRoomName());
-
+            intent.putExtra("roomName", clickedChatRoom.getHideRoomName());
             startActivity(intent);
         });
 
@@ -105,72 +124,38 @@ public class ChatFragment extends Fragment {
             Log.d(TAG, "receivedID 값" + receivedID);
             Log.d(TAG, "loginType 값" + loginType);
             Log.d(TAG, "kakao 값" + kakaoProfileImageUrl);
-
-            // getChatroom 메소드 호출
-
         } else {
             Log.e(TAG, "Arguments bundle is null");
         }
 
+
+
         return view;
-
-
-
-
     }
-
-
-
-
-
-
-
-
 
     @Override
     public void onResume() {
         super.onResume();
 
         Log.d(TAG, "onResume: 여기들어옴?");
-
-
-
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // 화면이 비활성화될 때, 안 읽은 메시지 개수를 초기화
         resetUnreadMessageCounts();
     }
 
-
-
-
-
-
-
     private void resetUnreadMessageCounts() {
-        // 사용자가 나가거나 화면이 비활성화될 때, 모든 채팅방의 안 읽은 메시지 개수를 초기화
         for (ChatRoomItem room : chatRoomItems) {
             room.setMessageCount(0);
         }
-        // UI 업데이트를 위해 어댑터에 변경 사항 알림
         chatAdapter.notifyDataSetChanged();
     }
 
-
-
-
-
     private void getUnreadMessageCount(String receivedID, String roomName) {
         ApiService chatCountApiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
-
         Call<Integer> call = chatCountApiService.getUnreadMessageCount(receivedID, roomName);
-
-        Log.d(TAG, "receivedID" + receivedID);
-        Log.d(TAG, "roomName" + roomName);
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
@@ -184,7 +169,6 @@ public class ChatFragment extends Fragment {
                             break;
                         }
                     }
-
                     chatAdapter.notifyDataSetChanged();
                 } else {
                     Log.e(TAG, "서버 응답 실패");
@@ -197,14 +181,4 @@ public class ChatFragment extends Fragment {
             }
         });
     }
-
-
-
-
-
-
-
-
-
-
 }

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dailydeliver.ApiService;
+import com.example.dailydeliver.Chatting.FCMNotificationSender;
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
 import com.example.dailydeliver.user_profile;
@@ -74,6 +75,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // 알림 권한 요청
         requestNotificationPermissions();
+
+
 
         Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
             @Override

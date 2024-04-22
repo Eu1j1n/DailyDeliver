@@ -2,6 +2,7 @@ package com.example.dailydeliver.Chatting;
 
 import static java.lang.System.out;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -25,9 +26,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.privacysandbox.tools.core.model.Method;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -57,12 +61,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -76,6 +83,8 @@ public class Chatting extends AppCompatActivity {
     private Handler mHandler;
 
     MessageAdapter messageAdapter;
+
+
 
     InetAddress serverAddr;
 
@@ -138,6 +147,9 @@ public class Chatting extends AppCompatActivity {
         receiver = splitRoomName[1];
 
         getToken(receiver);
+
+
+
 
 
         // [1]은 나의 아이디 [2]는 상대 아이디임.
@@ -221,6 +233,9 @@ public class Chatting extends AppCompatActivity {
                                         if (response.isSuccessful()) {
                                             // 성공적으로 전송된 경우
                                             Log.d(TAG, "채팅 메시지 전송 성공");
+                                            getToken(receiver);
+                                            Log.d(TAG, "receiver" + receiver);
+                                            sendNotification(senderID, messageContent, currentTime, roomName);
                                         } else {
                                             // 전송 실패한 경우
                                             Log.e(TAG, "채팅 메시지 전송 실패");
@@ -324,6 +339,8 @@ public class Chatting extends AppCompatActivity {
 
 
     }
+
+
     class msgUpdate implements Runnable {
         private String msg;
 
@@ -458,7 +475,11 @@ public class Chatting extends AppCompatActivity {
             });
         }
     }
+
+
     private void getToken(String orderPeople) {
+
+
         // Retrofit 인터페이스 생성
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
@@ -472,13 +493,16 @@ public class Chatting extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     // 응답을 JsonObject로 받음
                     JsonObject jsonObject = response.body();
-                    // JsonObject에서 토큰 값 추출
+
                     otherPeopleToken = jsonObject.get("token").getAsString();
                     Log.d(TAG, "상대방 토큰" + otherPeopleToken);
-                    // 토큰을 사용하여 원하는 작업 수행
+
+
+
                 } else {
                     // API 호출에 실패한 경우
                     Log.e(TAG, "토큰을 가져오는 데 실패했습니다.");
+
                 }
             }
 
@@ -486,9 +510,50 @@ public class Chatting extends AppCompatActivity {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 // 네트워크 오류 등으로 API 호출에 실패한 경우
                 Log.e(TAG, "토큰을 가져오는 데 실패했습니다.", t);
+
             }
         });
     }
+
+
+
+    private void sendNotification(String senderID, String messageContent, String currentTime, String roomName) {
+        // 상대방 토큰 값을 받고 노티피케이션으로 아이디랑 내용 보냄
+        FCMNotificationSender notificationSender = new FCMNotificationSender(otherPeopleToken, senderID, messageContent, senderID, messageContent, currentTime, roomName);
+        Log.d(TAG, "OtherPeopleToken값" + otherPeopleToken);
+        Log.d(TAG, "senderID" + senderID);
+        Log.d(TAG, "messageContent" + messageContent);
+
+        notificationSender.execute();
+    }
+
+
+
+//    private void send_FCM(String token) {
+//        Log.d(TAG + " send_FCM", "실행");
+//        Log.d(TAG, "이때 토큰 값" + token);
+//        com.android.volley.Response.Listener<String> responseListener = new com.android.volley.Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                Log.d(TAG + " send_FCM", response);
+//                if (response != null && response.equals("{\"success\":1,\"message\":\"FCM Send Success\"}")) {
+//                    // 푸시 알림 전송 성공 시 처리할 내용
+//                    Log.d(TAG, "FCM 푸시 알림 전송 성공");
+//                } else {
+//                    // 푸시 알림 전송 실패 시 처리할 내용
+//                    Log.e(TAG, "FCM 푸시 알림 전송 실패");
+//                }
+//            }
+//        };
+//        fcm_request getUserInformation = new fcm_request(token, responseListener);
+//        RequestQueue queue = Volley.newRequestQueue(Chatting.this);
+//        queue.add(getUserInformation);
+//    }
+
+
+
+
+
 
 
 
@@ -702,6 +767,10 @@ public class Chatting extends AppCompatActivity {
             uploadImage(selectedImageUri);
         }
     }
+
+
+
+
 
 
     private void uploadImage(Uri imageUri) { // 이미지 채팅 올리는곳

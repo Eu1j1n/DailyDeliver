@@ -37,6 +37,8 @@
             </intent-filter>
         </service>
 
+
+
         <activity
             android:name=".Fragment.ShowLocation"
             android:exported="false" />
@@ -91,6 +93,15 @@
                     android:scheme="kakao20458c53f41feddbd90e4c7bc58dddda" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/teal_200" />
+
         <activity
             android:name=".Activity.MainActivity"
             android:exported="false" />
