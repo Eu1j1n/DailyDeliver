@@ -144,7 +144,16 @@ public class Chatting extends AppCompatActivity {
 
 
         String[] splitRoomName = roomName.split("01072047094");
-        receiver = splitRoomName[1];
+        if (!receivedID.equals(splitRoomName[0])) {
+            receiver = splitRoomName[0];
+        } else {
+            receiver = splitRoomName[1];
+        }
+
+        Log.d(TAG, "receiver" + receiver);
+
+        textViewChatname.setText(receiver);
+
 
         getToken(receiver);
 
@@ -152,14 +161,7 @@ public class Chatting extends AppCompatActivity {
 
 
 
-        // [1]은 나의 아이디 [2]는 상대 아이디임.
-        if (splitRoomName.length == 2) {
-            String otherName = splitRoomName[1].trim();
-            Log.d(TAG, "otherName" + otherName);
-            textViewChatname.setText(otherName);
-        } else {
-            Log.d(TAG, "ERROR");
-        }
+
 
 
         getChatHistory(roomName);
@@ -200,6 +202,7 @@ public class Chatting extends AppCompatActivity {
                                 String messageIdAsString = String.valueOf(messageID);
                                 String receiveRoomName = roomName;
                                 String senderID = receivedID;
+                                String receivedID = receiver;
                                 String messageContent = editMessage.getText().toString();
                                 Log.d(TAG, "messageContent" + messageContent);
 
@@ -215,7 +218,9 @@ public class Chatting extends AppCompatActivity {
                                 String currentDate = (String) DateFormat.format("MM-dd-yyyy", new Date());
 
                                 String saveMessage = receiveRoomName + ">" + senderID + ">" + messageContent + ">" + currentTime + ">"
-                                        + currentDate + ">" +messageIdAsString;
+                                        + currentDate + ">" + receiver ;
+
+                                Log.d(TAG, "receiver" + receiver);
 
                                 Log.d(TAG, "saveMessage의 값 " + saveMessage);
                                 sendWriter.println(messageToSend);
@@ -397,7 +402,7 @@ public class Chatting extends AppCompatActivity {
                         if (messageContent.contains("image_")) {
                             String[] fileNameParts = messageContent.split("/");
                             String fileName = fileNameParts[fileNameParts.length - 1];
-                            String imageUrl = "http://52.79.88.52/chattingImage/" + fileName;
+                            String imageUrl = baseUri + "/chattingImage/" + fileName;
 
                             message = new Message(imageUrl, currentTime, Message.TYPE_MY_PICTURE_MESSAGE, senderID, profileImageUrl, currentDate, imageUrl, messageID, messageType);
                         } else {
@@ -414,7 +419,7 @@ public class Chatting extends AppCompatActivity {
                         if (messageContent.contains("image_")) {
                             String[] fileNameParts = messageContent.split("/");
                             String fileName = fileNameParts[fileNameParts.length - 1];
-                            String imageUrl = "http://52.79.88.52/chattingImage/" + fileName;
+                            String imageUrl = baseUri + "/chattingImage/" + fileName;
 
                             // 상대방 프로필 이미지 가져오기
                             ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
@@ -426,10 +431,10 @@ public class Chatting extends AppCompatActivity {
                                     if (response.isSuccessful()) {
                                         ImageResponse imageResponse = response.body();
                                         String profileImageFileName = imageResponse.getImagePath();
-                                        String profileImageUrl = "http://52.79.88.52/newImage/" + profileImageFileName;
+
                                         Log.d(TAG, "profileImageUrl !!!!" + profileImageUrl);
 
-                                        Message imageMessage = new Message(imageUrl, currentTime, Message.TYPE_OTHER_PICTURE_MESSAGE, senderID, profileImageUrl, currentDate, imageUrl, messageID, 2);
+                                        Message imageMessage = new Message(imageUrl, currentTime, Message.TYPE_OTHER_PICTURE_MESSAGE, senderID, profileImageFileName, currentDate, imageUrl, messageID, 2);
                                         messageList.add(imageMessage);
                                         sortMessagesByTimestamp();
                                         messageAdapter.notifyDataSetChanged();
@@ -452,10 +457,10 @@ public class Chatting extends AppCompatActivity {
                                     if (response.isSuccessful()) {
                                         ImageResponse imageResponse = response.body();
                                         String profileImageFileName = imageResponse.getImagePath();
-                                        String profileImageUrl = "http://52.79.88.52/newImage/" + profileImageFileName;
+
                                         Log.d(TAG, "profileImageUrl !!!!" + profileImageUrl);
 
-                                        Message otherMessage = new Message(messageContent, currentTime, Message.TYPE_OTHER_MESSAGE, senderID, profileImageUrl, currentDate, null, messageID, 2);
+                                        Message otherMessage = new Message(messageContent, currentTime, Message.TYPE_OTHER_MESSAGE, senderID, profileImageFileName, currentDate, null, messageID, 2);
                                         messageList.add(otherMessage);
 
                                         sortMessagesByTimestamp();
@@ -529,26 +534,7 @@ public class Chatting extends AppCompatActivity {
 
 
 
-//    private void send_FCM(String token) {
-//        Log.d(TAG + " send_FCM", "실행");
-//        Log.d(TAG, "이때 토큰 값" + token);
-//        com.android.volley.Response.Listener<String> responseListener = new com.android.volley.Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                Log.d(TAG + " send_FCM", response);
-//                if (response != null && response.equals("{\"success\":1,\"message\":\"FCM Send Success\"}")) {
-//                    // 푸시 알림 전송 성공 시 처리할 내용
-//                    Log.d(TAG, "FCM 푸시 알림 전송 성공");
-//                } else {
-//                    // 푸시 알림 전송 실패 시 처리할 내용
-//                    Log.e(TAG, "FCM 푸시 알림 전송 실패");
-//                }
-//            }
-//        };
-//        fcm_request getUserInformation = new fcm_request(token, responseListener);
-//        RequestQueue queue = Volley.newRequestQueue(Chatting.this);
-//        queue.add(getUserInformation);
-//    }
+
 
 
 
@@ -627,7 +613,8 @@ public class Chatting extends AppCompatActivity {
                             if (messageContent.contains("image_")) {
                                 String[] fileNameParts = messageContent.split("/");
                                 String fileName = fileNameParts[fileNameParts.length - 1];
-                                String imageUrl = "http://52.79.88.52/chattingImage/" + fileName;
+
+                                String imageUrl = baseUri + "/chattingImage/" + fileName;
                                 Message imageMessage = new Message(imageUrl, currentTime, Message.TYPE_MY_PICTURE_MESSAGE, senderID, null, currentDate, imageUrl, messageID, isRead);
                                 messageList.add(imageMessage);
                             } else {
@@ -639,7 +626,7 @@ public class Chatting extends AppCompatActivity {
                             if (messageContent.contains("image_")) {
                                 String[] fileNameParts = messageContent.split("/");
                                 String fileName = fileNameParts[fileNameParts.length - 1];
-                                String imageUrl = "http://52.79.88.52/chattingImage/" + fileName;
+                                String imageUrl = baseUri + "/chattingImage/" + fileName;
                                 Message otherImageMessage = new Message(imageUrl, currentTime, Message.TYPE_OTHER_PICTURE_MESSAGE, senderID, null, currentDate, imageUrl, messageID, 2);
                                 messageList.add(otherImageMessage);
                                 retrieveProfileImageAndUpdateMessages(senderID);
@@ -678,12 +665,12 @@ public class Chatting extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ImageResponse imageResponse = response.body();
                     String profileImageFileName = imageResponse.getImagePath();
-                    String profileImageUrl = "http://52.79.88.52/newImage/" + profileImageFileName;
+
 
                     // 가져온 프로필 이미지를 메시지 객체에 설정
                     for (Message message : messageList) {
                         if (message.getSender().equals(senderID)) {
-                            message.setProfileImageUrl(profileImageUrl);
+                            message.setProfileImageUrl(profileImageFileName);
                         }
                     }
 
@@ -849,6 +836,9 @@ public class Chatting extends AppCompatActivity {
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
                             // 성공적으로 전송된 경우
+                            getToken(receiver);
+                            Log.d(TAG, "이미지 리시버" + receiver);
+                            sendNotification(receivedID, fileName, currentTime, roomName);
                             Log.d(TAG, "이미지 메시지 전송 및 저장 성공");
                         } else {
                             // 전송 실패한 경우

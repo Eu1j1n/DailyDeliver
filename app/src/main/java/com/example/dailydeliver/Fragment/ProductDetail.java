@@ -108,12 +108,25 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String firstUserID = receivedID; // 첫 번째 사용자 ID
+                String secondUserID = nicknameTextView.getText().toString(); // 두 번째 사용자 ID
+
+                // 사용자 ID를 알파벳 순서로 정렬하여 대화방 이름 생성
+                String sortedRoomName;
+                if (firstUserID.compareTo(secondUserID) < 0) {
+                    sortedRoomName = firstUserID + "01072047094" + secondUserID;
+                } else {
+                    sortedRoomName = secondUserID + "01072047094" + firstUserID;
+                }
+
+                // 대화방으로 전달할 데이터 설정
                 Intent chatIntent = new Intent(ProductDetail.this, Chatting.class);
-                chatIntent.putExtra("roomName",receivedID + "01072047094" + nicknameTextView.getText().toString());
+                chatIntent.putExtra("roomName", sortedRoomName);
                 chatIntent.putExtra("id", receivedID);
                 startActivity(chatIntent);
             }
         });
+
 
 
 

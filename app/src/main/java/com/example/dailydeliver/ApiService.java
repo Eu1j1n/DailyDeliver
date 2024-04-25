@@ -99,11 +99,9 @@ public interface ApiService {
 
     @POST("unReadMessageCount.php")
     @FormUrlEncoded
-    Call<Integer> getUnreadMessageCount(
-            @Field("userId") String userId,
-            @Field("roomName") String roomName
+    Call<Map<String, Integer>> getUnreadMessageCount(
+            @Field("receivedID") String receivedID
     );
-
 
     @POST("readStatus.php")
     @FormUrlEncoded

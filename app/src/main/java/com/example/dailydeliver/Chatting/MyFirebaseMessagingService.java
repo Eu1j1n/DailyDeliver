@@ -10,15 +10,18 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.dailydeliver.Activity.LoginActivity;
 import com.example.dailydeliver.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
+    private static final String TAG = "MyFirebaseMsgService 액티비티";
     private static final String CHANNEL_ID = "my_notification_channel";
 
     private String otherName;
@@ -29,7 +32,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 푸시 알림의 제목과 내용 가져오기
         String title = remoteMessage.getNotification().getTitle();
+
         String msg = remoteMessage.getNotification().getBody();
+
+        if (msg.startsWith("image_")) {
+            msg = "(사진)";
+        }
+
+
 
         Log.d(TAG, "title: " + title);
         Log.d(TAG, "msg: " + msg);
@@ -38,30 +48,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String senderID = remoteMessage.getData().get("senderID");
         String messageContent = remoteMessage.getData().get("messageContent");
         String time = remoteMessage.getData().get("time");
+        Log.d(TAG, "time" + time);
         String roomName = remoteMessage.getData().get("roomName");
-
-        String[] splitRoomName = roomName.split("01072047094");
-        otherName = splitRoomName[0];
-
-        Intent chatRoomIntent = new Intent(this, ChatFragment.class);
-        chatRoomIntent.setAction("MESSAGE_RECEIVED");
-
-        chatRoomIntent.putExtra("senderID", senderID);
-        chatRoomIntent.putExtra("messageContent", messageContent);
-        chatRoomIntent.putExtra("time", time);
-        chatRoomIntent.putExtra("roomName", roomName);
-        sendBroadcast(chatRoomIntent);
-
-
-
-
-
-
-
-        Log.d(TAG, "senderID: " + senderID);
-        Log.d(TAG, "messageContent: " + messageContent);
-        Log.d(TAG, "time: " + time);
         Log.d(TAG, "roomName" + roomName);
+
+
+
+        EventBus.getDefault().post(new MessageEvent(senderID, messageContent, time, roomName));
+        Log.d(TAG, "senderId" + senderID);
+
+
+
 
         // 알림 클릭 시 열릴 액티비티 설정
         Intent intent = new Intent(this, LoginActivity.class);
@@ -73,7 +70,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 알림 생성
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.applogo)
                 .setContentTitle(title)
                 .setContentText(msg)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
