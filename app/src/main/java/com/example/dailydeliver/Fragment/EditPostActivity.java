@@ -3,6 +3,7 @@ package com.example.dailydeliver.Fragment;
 import android.app.Activity;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -39,8 +41,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.dailydeliver.ApiService;
 
+import com.example.dailydeliver.Chatting.Chatting;
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 
 import java.io.File;
@@ -49,6 +54,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -68,27 +74,38 @@ import retrofit2.Retrofit;
 public class EditPostActivity extends AppCompatActivity implements ImageAdapter.OnImageDeleteListener {
 
     private ImageButton closeButton;
-    private ImageView postImageView;
+    private ImageView postImageView, downButtonImageView;
+
+    private  TextView priceTextView, deadline, deadlineTextView;
     private RecyclerView imageRecyclerView;
     private EditText titleEditText;
     private EditText priceEditText;
     private EditText descriptionEditText;
-    private TextView locationTextView;
+    private TextView locationTextView, editPostTextView;
     private Button completeButton;
 
     private TextView imageCountTextView;
 
+    private BottomSheetDialog editPostDialog;
+
     private String TAG = "글쓰는 액티비티";
 
+
+
     private ProgressBar progressBar;
+
+    private EditText bidPriceEditText;
 
     private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
 
     private String userName;
 
+    private TextView bidPriceTextView;
     private double latitude;
     private double longitude;
+
+    int selectedButton = 0; // 기본값으로 구매 입찰 버튼값
 
 
 
@@ -97,6 +114,10 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     String ImageUri = "http://43.201.32.122/postImage/";
 
     private static final int MAX_IMAGE_COUNT = 10;
+
+    Button bidButton, sellButton;
+
+    TextView warningLOW;
 
 
 
@@ -121,7 +142,29 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         String dateTime = sdf.format(new Date());
         imageCountTextView = findViewById(R.id.imageCount);
         progressBar = findViewById(R.id.progressBar);
+        bidButton = findViewById(R.id.bidButton);
+        sellButton = findViewById(R.id.sellButton);
+        bidPriceEditText = findViewById(R.id.bidPriceEditText);
+        bidPriceTextView = findViewById(R.id.bidPriceTextView);
+        priceTextView = findViewById(R.id.priceTextView);
+        editPostTextView = findViewById(R.id.editPostTextView);
 
+        warningLOW = findViewById(R.id.warningLow);
+
+        deadline = findViewById(R.id.deadLine);
+        deadlineTextView = findViewById(R.id.deadLineTextView);
+
+        downButtonImageView = findViewById(R.id.downButtonImageView);
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        String formattedDate = dateFormat.format(calendar.getTime());
+
+
+        deadlineTextView.setText("1일 (" + formattedDate + " 마감)");
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -154,6 +197,45 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             }
         });
 
+
+        View.OnClickListener myClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBottomSheetDialog();
+
+            }
+        };
+
+
+        deadlineTextView.setOnClickListener(myClickListener);
+        downButtonImageView.setOnClickListener(myClickListener);
+
+
+
+
+
+
+        bidButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedButton = 0; // 구매 입찰 버튼을 선택한 상태로 변경
+                updateButtonBackgrounds();
+            }
+        });
+
+
+        sellButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedButton = 1; // 즉시 판매 버튼을 선택한 상태로 변경
+                updateButtonBackgrounds();
+            }
+        });
+
+
+
+
+
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,7 +257,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
 
         //  텍스트 변경을 감지하는 TextWatcher
-        priceEditText.addTextChangedListener(new TextWatcher() {
+        priceEditText.addTextChangedListener(new TextWatcher(){ // 즉시구매가
             private boolean isDeleting = false;
 
             @Override
@@ -195,39 +277,88 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 // 숫자와 쉼표만 남기고 모든 문자 제거
                 String cleanString = originalString.replaceAll("[₩,]", "");
 
-                // 숫자를 쉼표 형식으로 포맷팅
-                DecimalFormat formatter = new DecimalFormat("#,###");
-                try {
-                    String formattedString = formatter.format(Long.parseLong(cleanString));
+                if (cleanString.isEmpty() && originalString.contains("₩")) {
+                    // '₩' 문자만 남아있는 경우, 텍스트를 비우고 힌트를 표시
+                    priceEditText.setText("");
+                    priceEditText.setHint("₩ 금액을 입력하세요");
+                    priceEditText.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    // 숫자를 쉼표 형식으로 포맷팅
+                    DecimalFormat formatter = new DecimalFormat("#,###");
+                    try {
+                        String formattedString = formatter.format(Long.parseLong(cleanString));
 
-                    // 텍스트가 비어있지 않은 경우
-                    if (!formattedString.isEmpty()) {
                         // 입력된 텍스트를 bold체로 설정하고 ₩를 붙여서 표시
-                        if (!formattedString.startsWith("₩")) {
-                            formattedString = "₩" + formattedString;
-                        }
+                        formattedString = "₩" + formattedString;
                         priceEditText.setTypeface(null, Typeface.BOLD);
-                    } else {
-                        // 입력된 텍스트가 비어있는 경우
-                        // 원래 hint 문구로 복원
-                        formattedString = "₩ 금액을 입력하세요";
-                        priceEditText.setTypeface(null, Typeface.NORMAL);
-                    }
 
-                    // 결과를 EditText에 설정
-                    priceEditText.setText(formattedString);
-                    priceEditText.setSelection(priceEditText.getText().length());
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
+                        // 결과를 EditText에 설정
+                        priceEditText.setText(formattedString);
+                        priceEditText.setSelection(priceEditText.getText().length());
+                    } catch (NumberFormatException nfe) {
+                        nfe.printStackTrace();
+                    }
                 }
+
+                checkAndShowWarning();
 
                 priceEditText.addTextChangedListener(this);
             }
+
         });
+
+         bidPriceEditText.addTextChangedListener(new TextWatcher() { //최소 입찰가
+            private boolean isbidDeleting = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isbidDeleting = count > after;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+             @Override
+             public void afterTextChanged(Editable s) {
+                 bidPriceEditText.removeTextChangedListener(this);
+
+                 String originalString = s.toString();
+
+                 // 숫자와 쉼표만 남기고 모든 문자 제거
+                 String cleanString = originalString.replaceAll("[₩,]", "");
+
+                 if (cleanString.isEmpty() && originalString.contains("₩")) {
+                     // '₩' 문자만 남아있는 경우, 텍스트를 비우고 힌트를 표시
+                     bidPriceEditText.setText("");
+                     bidPriceEditText.setHint("₩ 최저 입찰가를 입력하세요");
+                     bidPriceEditText.setTypeface(null, Typeface.NORMAL);
+                 } else {
+                     // 숫자를 쉼표 형식으로 포맷팅
+                     DecimalFormat formatter = new DecimalFormat("#,###");
+                     try {
+                         String formattedString = formatter.format(Long.parseLong(cleanString));
+
+                         // 입력된 텍스트를 bold체로 설정하고 ₩를 붙여서 표시
+                         formattedString = "₩" + formattedString;
+                         bidPriceEditText.setTypeface(null, Typeface.BOLD);
+
+                         // 결과를 EditText에 설정
+                         bidPriceEditText.setText(formattedString);
+                         bidPriceEditText.setSelection(bidPriceEditText.getText().length());
+                     } catch (NumberFormatException nfe) {
+                         nfe.printStackTrace();
+                     }
+                 }
+
+                 checkAndShowWarning();
+
+                 bidPriceEditText.addTextChangedListener(this);
+             }
+
+         });
 
 
         completeButton.setOnClickListener(new View.OnClickListener() {
-            private boolean isProcessing = false;
 
             @Override
             public void onClick(View v) {
@@ -239,6 +370,20 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 String sendTime = dateTime;
                 String price = priceEditText.getText().toString();
                 String description = descriptionEditText.getText().toString();
+                String bidPrice = bidPriceEditText.getText().toString();
+                String deadlineText = deadlineTextView.getText().toString();
+                String deadlineDate = "";
+
+                String[] parts = deadlineText.split("일");
+                if (parts.length > 0) {
+                    deadlineDate = parts[0];
+                }
+
+
+
+
+                long immediatePrice = getNumberFromString(priceEditText.getText().toString());
+                long longBidPrice = getNumberFromString(bidPriceEditText.getText().toString());
 
                 if (title.isEmpty()) {
                     Toast.makeText(EditPostActivity.this, "제목을 입력하세요", Toast.LENGTH_SHORT).show();
@@ -260,10 +405,23 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                     return;
                 }
 
+                if(selectedButton == 0 && bidPrice.isEmpty()) {
+                    Toast.makeText(EditPostActivity.this, "최저입찰가를 입력하세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                if (immediatePrice < longBidPrice) {
+                    Toast.makeText(EditPostActivity.this, "즉시 입찰가가 최소 입찰가보다 같거나 낮습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String saleType = selectedButton == 0 ? "입찰" : "즉시판매";
+
                 // 선택된 모든 이미지를 서버에 업로드
                 uploadImagesToServer(selectedImageUris, userName);
 
-                sendDataToServer(selectedImageUris, userName, title, location, sendTime, price, description, latitude, longitude);
+                sendDataToServer(selectedImageUris, userName, title, location, sendTime, price, description, latitude, longitude, saleType, bidPrice, deadlineDate);
             }
         });
 
@@ -333,7 +491,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
 
     private void sendDataToServer(List<Uri> imageUris, String userName, String title, String location, String sendTime, String price, String description
-    ,double latitude, double longitude) {
+    ,double latitude, double longitude, String saleType, String bidPrice, String deadLineDate) {
         // 이미지 파일 이름 목록 생성
         Map<String, String> imageNames = new LinkedHashMap<>();
 
@@ -362,7 +520,10 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 userName,
                 description,
                 latitude,
-                longitude
+                longitude,
+                saleType,
+                bidPrice,
+                deadLineDate
         );
 
         call.enqueue(new Callback<Void>() {
@@ -390,6 +551,136 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     }
 
 
+    private void showBottomSheetDialog() {
+        editPostDialog = new BottomSheetDialog(EditPostActivity.this);
+        View contentView = getLayoutInflater().inflate(R.layout.deadlinebottomdialog, null);
+        editPostDialog.setContentView(contentView);
+
+        ImageButton closeButton = contentView.findViewById(R.id.btnClose);
+        Button btnOneDay = contentView.findViewById(R.id.btnOneDay);
+        Button btnThreeDays = contentView.findViewById(R.id.btnThreeDays);
+        Button btnSevenDays = contentView.findViewById(R.id.btnSevenDays);
+        Button btnOneMonth = contentView.findViewById(R.id.btnOneMonth);
+        Button btnTwoMonth = contentView.findViewById(R.id.btnTwoMonth);
+        Button btnThreeMonth = contentView.findViewById(R.id.btnThreeMonth);
+
+        btnOneDay.setOnClickListener(new View.OnClickListener() { // 1일
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(1);
+            }
+        });
+
+        // 3일 버튼 클릭 이벤트 !
+        btnThreeDays.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(3);
+                editPostDialog.dismiss();
+            }
+        });
+
+        // 7일 버튼 클릭 이벤트!
+        btnSevenDays.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(7);
+                editPostDialog.dismiss();
+            }
+        });
+
+        btnOneMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(30);
+                editPostDialog.dismiss();
+            }
+        });
+
+        btnTwoMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(60);
+                editPostDialog.dismiss();
+            }
+        });
+
+        btnThreeMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeadlineText(90);
+                editPostDialog.dismiss();
+            }
+        });
+
+
+
+        closeButton.setOnClickListener(new View.OnClickListener() { // 닫기 !
+            @Override
+            public void onClick(View v) {
+                editPostDialog.dismiss(); // 다이얼로그 닫기 !
+            }
+        });
+
+
+
+        editPostDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                BottomSheetDialog dialog = (BottomSheetDialog) dialogInterface;
+                FrameLayout bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheet != null) {
+                    BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+
+                    // 최대 높이 설정
+                    behavior.setPeekHeight(contentView.getHeight());
+                }
+            }
+        });
+
+        editPostDialog.show();
+    }
+
+    private void setDeadlineText(int daysToAdd) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, daysToAdd); // 주어진 일수만큼 날짜를 더함
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        String formattedDate = dateFormat.format(calendar.getTime());
+
+        // deadlineTextView에 날짜 정보 설정
+        deadlineTextView.setText(daysToAdd + "일 (" + formattedDate + " 마감)");
+    }
+
+
+    private void updateButtonBackgrounds() {
+        switch (selectedButton) {
+            case 0: // 판매 입찰 선택
+                bidButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.green_button));
+                sellButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.gray_button));
+                bidPriceEditText.setVisibility(View.VISIBLE);
+                bidPriceTextView.setVisibility(View.VISIBLE);
+                priceTextView.setText("즉시판매가");
+                editPostTextView.setText("판매 입찰");
+                deadline.setVisibility(View.VISIBLE);
+                deadlineTextView.setVisibility(View.VISIBLE);
+                downButtonImageView.setVisibility(View.VISIBLE);
+                break;
+            case 1: // 즉시 판매 선택
+                bidButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.gray_button));
+                sellButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.green_button));
+                bidPriceEditText.setVisibility(View.GONE);
+                bidPriceTextView.setVisibility(View.GONE);
+                priceTextView.setText("가격");
+                editPostTextView.setText("즉시 판매");
+                deadline.setVisibility(View.GONE);
+                deadlineTextView.setVisibility(View.GONE);
+                downButtonImageView.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+
     private void openImageChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -398,6 +689,33 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             startActivityForResult(intent, REQUEST_IMAGE_GET);
         }
     }
+
+    private void checkAndShowWarning() {
+        // 즉시구매가와 최소 입찰가를 숫자 형태로 변환
+        long immediatePrice = getNumberFromString(priceEditText.getText().toString());
+        long bidPrice = getNumberFromString(bidPriceEditText.getText().toString());
+
+        // 즉시구매가가 최소 입찰가보다 낮거나 같은 경우 경고 메시지 표시
+        if (immediatePrice <= bidPrice) {
+            warningLOW.setVisibility(View.VISIBLE);
+        } else {
+            warningLOW.setVisibility(View.GONE);
+        }
+    }
+
+
+
+
+    // 문자열에서 숫자만 추출하여
+    private long getNumberFromString(String str) {
+        str = str.replaceAll("[^0-9]", ""); // 숫자가 아닌 모든 문자 제거
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            return 0; // 변환 실패 시 0 반환
+        }
+    }
+
 
     private void updateImageRecyclerView() {
         // ImageAdapter 객체를 생성할 때 세 번째 매개변수로 OnImageDeleteListener를 전달

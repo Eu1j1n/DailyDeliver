@@ -68,6 +68,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     CircleIndicator3 circleIndicator;
 
+    private boolean isActivitySwitchInProgress = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

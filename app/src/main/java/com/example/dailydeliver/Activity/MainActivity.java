@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                         bundle.putString("receivedID", receivedID);
                         chatFragment.setArguments(bundle);
                         break;
-                    case R.id.bottom_add:
+                    case R.id.bottom_wish:
                         // 추가 기능 처리
                         break;
                     case R.id.bottom_mypage:

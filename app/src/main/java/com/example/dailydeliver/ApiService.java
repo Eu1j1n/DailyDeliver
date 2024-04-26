@@ -81,7 +81,11 @@ public interface ApiService {
             @Field("userName") String userName,
             @Field("description") String description,
             @Field("latitude") double latitude,
-            @Field("longitude") double longitude
+            @Field("longitude") double longitude,
+            @Field("saleType") String saleType,
+            @Field("bidPrice") String bidPrice,
+            @Field("deadLineDate") String deadLineDate
+
     );
 
 

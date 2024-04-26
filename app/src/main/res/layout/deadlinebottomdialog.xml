@@ -1,0 +1,111 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:layout_centerInParent="true"
+            android:text="입찰 마감 기간"/>
+
+        <ImageButton
+            android:contentDescription="닫는버튼"
+            android:id="@+id/btnClose"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:background="@color/white"
+            android:layout_centerVertical="true"
+            android:src="@drawable/backbutton_foreground"/>
+    </RelativeLayout>
+
+    <!-- 박스 형태의 날짜 선택 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+       >
+
+        <android.widget.Button
+            android:id="@+id/btnOneDay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1일"
+            android:background="@drawable/button_border"
+            />
+
+        <android.widget.Button
+            android:id="@+id/btnThreeDays"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:text="3일"
+            android:background="@drawable/button_border"
+            />
+
+        <android.widget.Button
+            android:id="@+id/btnSevenDays"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="7일"
+            android:layout_marginLeft="10dp"
+           android:background="@drawable/button_border"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <android.widget.Button
+            android:id="@+id/btnOneMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="30일"
+            android:background="@drawable/button_border"
+            />
+
+        <android.widget.Button
+            android:id="@+id/btnTwoMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:text="60일"
+            android:background="@drawable/button_border"
+            />
+
+        <android.widget.Button
+            android:id="@+id/btnThreeMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="90일"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/button_border"/>
+    </LinearLayout>
+
+</LinearLayout>
+

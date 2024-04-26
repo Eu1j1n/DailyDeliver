@@ -79,7 +79,7 @@ import retrofit2.Response;
 public class Chatting extends AppCompatActivity {
 
     private EditText editMessage;
-    private Button submitButton;
+
     private Handler mHandler;
 
     MessageAdapter messageAdapter;
@@ -98,7 +98,7 @@ public class Chatting extends AppCompatActivity {
 
     private String ip = "43.201.32.122";
     private int port = 8888;
-    private ImageButton quit, plusButton;
+    private ImageButton quit, plusButton, submitButton;
 
     String TAG = "채팅방 액티비티";
 
@@ -908,7 +908,7 @@ public class Chatting extends AppCompatActivity {
 
 
 
-    // 클라이언트에서 채팅방에 입장한 경우
+
 
 
 

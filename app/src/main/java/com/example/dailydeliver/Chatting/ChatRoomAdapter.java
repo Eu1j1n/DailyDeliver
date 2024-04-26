@@ -47,6 +47,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
     public void onBindViewHolder(@NonNull ChatRoomViewHolder holder, int position) {
         ChatRoomItem chatRoomItem = chatRoomItems.get(position);
 
+
         holder.txtChatName.setText(chatRoomItem.getChatRoomName());
         holder.txtLastMessage.setText(chatRoomItem.getLastMessage());
        holder.messageTime.setText(chatRoomItem.getMessageTime());
@@ -62,6 +63,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ChatRo
             // 기본 이미지 설정
             holder.profile.setImageResource(R.drawable.profile);
         }
+
+
 
 
 

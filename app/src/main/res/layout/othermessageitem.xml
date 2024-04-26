@@ -14,6 +14,7 @@
         android:id="@+id/chatProfileImage"
         android:layout_gravity="center_vertical"
         android:src="@drawable/profile"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"/>
 
     <LinearLayout
@@ -25,10 +26,12 @@
             android:id="@+id/txt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10dp"
+            android:textSize="13dp"
             android:text="상대방 이름"
             android:contentDescription="상대방 이름"
-            android:layout_marginStart="8dp"/>
+            android:textStyle="bold"
+
+            android:layout_marginStart="10dp"/>
 
         <TextView
             android:id="@+id/txt_message"
@@ -43,8 +46,9 @@
             android:layout_marginLeft="10dp"
             android:linksClickable="true"
             android:padding="10dp"
+            android:textColor="@color/black"
             android:text="안녕하세요."
-            android:textColor="@color/white" />
+             />
 
         <ImageView
             android:id="@+id/chatImageView"
@@ -57,7 +61,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/txt_date"
+        android:id="@+id/other_txt_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

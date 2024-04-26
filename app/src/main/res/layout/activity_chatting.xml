@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     android:background="@color/white">
 
+
     <TextView
         android:id="@+id/chatroomName"
 
@@ -22,9 +23,10 @@
 
     <ImageButton
         android:id="@+id/quit"
-        android:layout_width="59dp"
-        android:layout_height="67dp"
-        android:layout_marginStart="20dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:contentDescription="종료 버튼"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/chatroomName"
@@ -124,11 +126,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
+    <ImageButton
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="전송"
+        android:src="@drawable/sendbutton"
         android:textColor="@color/black"
         app:backgroundTint="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
