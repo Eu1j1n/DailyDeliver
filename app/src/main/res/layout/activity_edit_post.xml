@@ -232,7 +232,7 @@
                 android:background="@color/white"
                 android:padding="10dp"
                 android:textSize="17dp"
-                android:inputType="number"
+
                 android:layout_below="@id/deadLine"
                 android:layout_toStartOf="@+id/downButtonImageView" />
 
@@ -278,6 +278,7 @@
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:gravity="top"
                 android:hint="자세한 설명을 입력하세요"
                 android:background="@drawable/edittext_bg"
                 android:padding="10dp"/>

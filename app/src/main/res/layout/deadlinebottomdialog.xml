@@ -24,12 +24,12 @@
         <ImageButton
             android:contentDescription="닫는버튼"
             android:id="@+id/btnClose"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:background="@color/white"
             android:layout_centerVertical="true"
-            android:src="@drawable/backbutton_foreground"/>
+            android:src="@drawable/ic_xbutton"/>
     </RelativeLayout>
 
     <!-- 박스 형태의 날짜 선택 영역 -->

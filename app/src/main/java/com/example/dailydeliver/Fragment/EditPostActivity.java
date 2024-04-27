@@ -359,11 +359,10 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
 
         completeButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 // 이미 처리 중인 경우 더 이상 처리하지 않음
-
+                String imageCount = imageCountTextView.getText().toString();
                 // 나머지 입력 데이터 가져오기
                 String title = titleEditText.getText().toString();
                 String location = locationTextView.getText().toString();
@@ -378,9 +377,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 if (parts.length > 0) {
                     deadlineDate = parts[0];
                 }
-
-
-
 
                 long immediatePrice = getNumberFromString(priceEditText.getText().toString());
                 long longBidPrice = getNumberFromString(bidPriceEditText.getText().toString());
@@ -416,7 +412,12 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                     return;
                 }
 
-                String saleType = selectedButton == 0 ? "입찰" : "즉시판매";
+                if(imageCount.equals("0/10")) {
+                    Toast.makeText(EditPostActivity.this, "이미지를 한장 이상 선택하세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String saleType = selectedButton == 0 ? "bid" : "immediate";
 
                 // 선택된 모든 이미지를 서버에 업로드
                 uploadImagesToServer(selectedImageUris, userName);

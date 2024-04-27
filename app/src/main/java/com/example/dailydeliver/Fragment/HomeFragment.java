@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.dailydeliver.ApiService;
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -130,11 +131,13 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
                         String time = data.getSend_time();
                         String userName = data.getUserName();
                         String description = data.getDescription();
-                        Log.d(TAG, "Image URI: " + imageUrl);
-                        Log.d(TAG, "onResponse: title" + title);
-                        Log.d(TAG, "onResponse: " + time);
-                        Log.d(TAG, "userName" + userName);
-                        Log.d(TAG, "onResponse: description" + description);
+                        String saleType = data.getSaleType();
+                        String bidPrice = data.getBidPrice();
+                        String remaining_time = data.getRemaining_time();
+                        Log.d(TAG, "onResponre" + remaining_time);
+
+                        Log.d(TAG, "bidPrice" + bidPrice);
+
                     }
 
                     displayPosts(posts);
