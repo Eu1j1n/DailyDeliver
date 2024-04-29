@@ -46,6 +46,8 @@
                 android:layout_below="@id/viewPager">
 
                 <!-- CircleImageView와 닉네임, 위치를 담는 수평 LinearLayout -->
+
+                <!-- 제목 텍스트뷰 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,9 +58,9 @@
                     <!-- CircleImageView -->
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profileImageView"
-                        android:layout_marginLeft="10dp"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:layout_marginLeft="10dp"
                         android:src="@drawable/profile" />
 
                     <!-- 닉네임과 위치를 담는 수직 LinearLayout -->
@@ -86,9 +88,12 @@
                             android:text="위치"
                             android:textSize="16sp" />
                     </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
                 </LinearLayout>
 
-                <!-- 제목 텍스트뷰 -->
                 <TextView
                     android:id="@+id/titleTextView"
                     android:layout_width="match_parent"
@@ -100,14 +105,7 @@
                     android:textStyle="bold" />
 
                 <!-- 시간 텍스트뷰 -->
-                <TextView
-                    android:id="@+id/timeTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:text="시간"
-                    android:textSize="13sp"
-                    android:layout_marginTop="13dp" />
+
 
                 <!-- 설명 내용 텍스트뷰 -->
                 <TextView
@@ -119,12 +117,112 @@
                     android:textSize="20sp"
                     android:layout_marginTop="13dp" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RadioGroup
+                        android:id="@+id/purchaseRadioGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/buyBidButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:background="@drawable/redbuttonselector"
+                            android:button="@null"
+                            android:checked="true"
+                            android:paddingLeft="30dp"
+                            android:paddingRight="30dp"
+                            android:text="구매 입찰"
+                            android:textAlignment="center"
+                            android:textColor="@drawable/buttonselectortext" />
+
+                        <RadioButton
+                            android:id="@+id/buyButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:background="@drawable/redbuttonrightselector"
+                            android:button="@null"
+                            android:paddingLeft="30dp"
+                            android:paddingRight="30dp"
+                            android:text="바로 구매"
+                            android:textAlignment="center"
+                            android:textColor="@drawable/buttonselectortext" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/hopePriceTextView"
+                    android:text="구매 희망가"
+                    ></TextView>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="희망가 입력"
+                    android:inputType="number"
+                    android:id="@+id/inputBidPriceEditText"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="end"
+                    ></EditText>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+
+
+                    android:id="@+id/immediateEditText"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="end"
+                    ></EditText>
+
+                <android.widget.Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="입찰하기"
+                    android:id="@+id/bidUpdateToServerButton"
+                    android:background="@drawable/green_button"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    ></android.widget.Button>
+
+
+
+                <android.widget.Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="구매 하기"
+                    android:visibility="gone"
+                    android:id="@+id/immediateBuyToServerButton"
+                    android:background="@drawable/green_button"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    ></android.widget.Button>
+
+
+
                 <TextView
                     android:id="@+id/detailAdress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text="상세 주소 :"
+                    android:text="거래 주소 :"
                     android:textStyle="bold"
                     android:textSize="15sp"
                     android:layout_marginTop="13dp" />
@@ -140,11 +238,11 @@
                     android:layout_gravity="end"/>
 
                 <!-- 여백을 위한 하얀색 바탕의 뷰 -->
+
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/productDetailMapView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                     />
+                    android:layout_height="200dp" />
 
                 <TextView
                     android:layout_marginLeft="10dp"
@@ -170,16 +268,48 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
 
+        <TextView
+            android:id="@+id/currentBidPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:text="현재 입찰가  100000000"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:shadowColor="@android:color/darker_gray"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
+
+
+
+
         <!-- 가격 텍스트뷰 -->
         <TextView
             android:id="@+id/priceTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="15dp"
-            android:text="가격"
+            android:layout_marginStart="10dp"
+            android:text="즉시구매가 10000"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:shadowColor="@android:color/darker_gray"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
+        <TextView
+            android:id="@+id/remainingTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:text="23:13:14"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:shadowColor="@android:color/darker_gray"
             android:shadowDx="1"

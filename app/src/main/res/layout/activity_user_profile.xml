@@ -95,24 +95,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <!-- 코인 이미지 -->
             <ImageView
-                android:layout_width="40dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginLeft="170dp"
                 android:src="@drawable/coin" />
 
             <!-- 남은 머니 텍스트뷰 -->
             <TextView
-                android:id="@+id/remainingMoney"
+                android:id="@+id/remainingCredit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:text="0" />
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"

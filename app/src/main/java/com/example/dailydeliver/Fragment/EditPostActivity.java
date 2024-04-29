@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -115,7 +116,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
     private static final int MAX_IMAGE_COUNT = 10;
 
-    Button bidButton, sellButton;
+    RadioButton bidButton, sellButton;
 
     TextView warningLOW;
 
@@ -657,8 +658,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     private void updateButtonBackgrounds() {
         switch (selectedButton) {
             case 0: // 판매 입찰 선택
-                bidButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.green_button));
-                sellButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.gray_button));
+
                 bidPriceEditText.setVisibility(View.VISIBLE);
                 bidPriceTextView.setVisibility(View.VISIBLE);
                 priceTextView.setText("즉시판매가");
@@ -668,8 +668,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 downButtonImageView.setVisibility(View.VISIBLE);
                 break;
             case 1: // 즉시 판매 선택
-                bidButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.gray_button));
-                sellButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.green_button));
+
                 bidPriceEditText.setVisibility(View.GONE);
                 bidPriceTextView.setVisibility(View.GONE);
                 priceTextView.setText("가격");

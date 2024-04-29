@@ -17,8 +17,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.dailydeliver.R;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private List<HomeData> homeData;
@@ -34,6 +36,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         void onItemClick(HomeData item);
     }
 
+    private Map<Integer, CountDownTimer> timersMap = new HashMap<>();
+
     HomeAdapter(Context context, List<HomeData> homeData, OnItemClickListener listener) {
         this.mInflater = LayoutInflater.from(context);
         this.homeData = homeData;
@@ -47,53 +51,63 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+    // onBindViewHolder 메서드 내에서
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final HomeData item = homeData.get(position);
         holder.productTitle.setText(item.getTitle());
         holder.locationTextView.setText(item.getLocation());
         holder.timeTextView.setText(item.getSend_time());
-        holder.priceTextView.setText("즉시구매가 " +item.getPrice());
+        Log.d(TAG, "time" + item.getSend_time());
+        holder.priceTextView.setText("즉시구매가 " + item.getPrice());
         holder.userNametextView.setText(item.getUserName());
 
-        if(item.getSaleType().equals("bid")) {
+        if (item.getSaleType().equals("bid")) {
             holder.biddingPriceTextView.setVisibility(View.VISIBLE);
             holder.remainingTimeTextView.setVisibility(View.VISIBLE);
             holder.biddingPriceTextView.setText("현재입찰가 " + item.getBidPrice());
-            holder.remainingTimeTextView.setText(item.getRemaining_time());
+            holder.stickerImageView.setVisibility(View.VISIBLE);
 
-            Log.d(TAG, "remaining time" + item.getRemaining_time());
+            String remainingTime = item.getRemaining_time();
 
-            long millisInFuture = parseRemainingTime(item.getRemaining_time());
+            Log.d(TAG, "remainingTime" + remainingTime);
+            if (remainingTime.equals("입찰 종료")) {
+                holder.remainingTimeTextView.setText("입찰 종료");
+            } else {
+                // 시간 형식이 %H:%I:%S일 경우에만 카운트다운 타이머 설정
+                if (remainingTime.matches("\\d{2}:\\d{2}:\\d{2}")) { // 정규표현식으로 패턴
+                    long millisInFuture = parseRemainingTime(item.getRemaining_time());
 
-            // 기존 타이머가 있다면 취소
-            if (holder.countDownTimer != null) {
-                holder.countDownTimer.cancel();
+                    // 기존 타이머가 있다면 중지
+                    if (timersMap.containsKey(position)) {
+                        timersMap.get(position).cancel();
+                    }
+
+                    // 새로운 타이머 시작
+                    CountDownTimer countDownTimer = new CountDownTimer(millisInFuture, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            // 남은 시간을 시:분:초 포맷으로 변환
+                            long hours = (millisUntilFinished / (1000 * 60 * 60)) % 24;
+                            long minutes = (millisUntilFinished / (1000 * 60)) % 60;
+                            long seconds = (millisUntilFinished / 1000) % 60;
+
+                            String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+                            holder.remainingTimeTextView.setText(timeFormatted);
+                        }
+
+                        public void onFinish() {
+                            holder.remainingTimeTextView.setText("입찰 종료");
+                        }
+                    };
+                    countDownTimer.start();
+                    timersMap.put(position, countDownTimer);
+                }
             }
-
-            holder.countDownTimer = new CountDownTimer(millisInFuture, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    // 남은 시간을 시:분:초 포맷으로 변환
-                    long hours = (millisUntilFinished / (1000 * 60 * 60)) % 24;
-                    long minutes = (millisUntilFinished / (1000 * 60)) % 60;
-                    long seconds = (millisUntilFinished / 1000) % 60;
-
-                    String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
-                    holder.remainingTimeTextView.setText(timeFormatted);
-                }
-
-                public void onFinish() {
-                    holder.remainingTimeTextView.setText("00:00:00");
-                }
-            }.start();
-
-
-        }else {
+        } else {
             holder.biddingPriceTextView.setVisibility(View.GONE);
             holder.remainingTimeTextView.setVisibility(View.GONE);
+            holder.stickerImageView.setVisibility(View.GONE);
         }
-
-
 
         // 아이템 클릭 이벤트 처리
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +132,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
     }
 
+
     @Override
     public int getItemCount() {
         return homeData.size();
@@ -136,6 +151,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         TextView remainingTimeTextView;
 
+        ImageView stickerImageView;
+
         ViewHolder(View itemView) {
             super(itemView);
             productImageView = itemView.findViewById(R.id.productImage);
@@ -146,6 +163,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             userNametextView = itemView.findViewById(R.id.usernameTextView);
             biddingPriceTextView = itemView.findViewById(R.id.biddingPriceTextView);
             remainingTimeTextView = itemView.findViewById(R.id.remainingTimeTextView);
+            stickerImageView = itemView.findViewById(R.id.stickerImageView);
         }
     }
 

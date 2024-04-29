@@ -2,6 +2,7 @@ package com.example.dailydeliver.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,9 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
     private String receivedID;
     String baseUri = "http://43.201.32.122/";
 
+    private Handler handler = new Handler();
+    private Runnable timeUpdateRunnable;
+
     public HomeFragment() {
         homeData = new ArrayList<>();
     }
@@ -70,6 +74,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
         homeAdapter = new HomeAdapter(getContext(), homeData, this); // 클릭 리스너 추가
         recyclerView.setAdapter(homeAdapter);
         progressBar = view.findViewById(R.id.homeProgressBar);
+
 
         editPostLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -156,9 +161,12 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
         });
     }
 
+
+
     private void displayPosts(List<HomeData> posts) {
         for (HomeData data : posts) {
             String sendTime = data.getSend_time();
+            Log.d(TAG, "sendTiem" + sendTime);
             String timeAgo = TimeUtil.getTimeAgo(sendTime);
             data.setSend_time(timeAgo);
         }

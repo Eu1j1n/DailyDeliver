@@ -4,6 +4,8 @@ import com.example.dailydeliver.Chatting.ChatMessage;
 import com.example.dailydeliver.Chatting.Message;
 import com.example.dailydeliver.Fragment.HomeData;
 import com.example.dailydeliver.Fragment.PostDetailData;
+import com.example.dailydeliver.profile.CreditResponse;
+import com.example.dailydeliver.profile.CreditUpdateRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -26,6 +28,13 @@ import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+
+    @POST("rechargeCredit.php")
+    Call<ResponseBody> updateCredit(@Body CreditUpdateRequest request);
+    @GET("sendUserCredit.php")
+    Call<CreditResponse> getCredit(@Query("receiveID") String receiveID);
+
 
 
     @FormUrlEncoded

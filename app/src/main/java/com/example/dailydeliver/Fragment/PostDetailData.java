@@ -16,6 +16,36 @@ public class PostDetailData {
 
     private Double longitude;
 
+    private String saleType;
+
+    private String bidPrice;
+
+    private String remaining_time;
+
+    public String getSaleType() {
+        return saleType;
+    }
+
+    public void setSaleType(String saleType) {
+        this.saleType = saleType;
+    }
+
+    public String getBidPrice() {
+        return bidPrice;
+    }
+
+    public void setBidPrice(String bidPrice) {
+        this.bidPrice = bidPrice;
+    }
+
+    public String getRemaining_time() {
+        return remaining_time;
+    }
+
+    public void setRemaining_time(String remaining_time) {
+        this.remaining_time = remaining_time;
+    }
+
     public Double getLatitude() {
         return latitude;
     }
@@ -33,7 +63,7 @@ public class PostDetailData {
     }
 
     public PostDetailData(List<String> image_uri, String title, String location, String send_time, String price, String userName
-            , String description, Double latitude, Double longitude) {
+            , String description, Double latitude, Double longitude, String saleType, String bidPrice, String remaining_time) {
         this.image_uri = image_uri;
         this.title = title;
         this.location = location;
@@ -43,6 +73,9 @@ public class PostDetailData {
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.saleType = saleType;
+        this.bidPrice = bidPrice;
+        this.remaining_time = remaining_time;
     }
 
     public List<String> getImage_uri() {

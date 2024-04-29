@@ -20,6 +20,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp">
 
+
+
+
         <!-- 카드뷰 내부에 이미지뷰를 배치합니다. -->
         <ImageView
             android:id="@+id/productImage"
@@ -27,7 +30,22 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/rocketlogo"/>
+
+        <ImageView
+            android:id="@+id/stickerImageView"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_sticker"
+            app:layout_constraintStart_toStartOf="@+id/cardView"
+            app:layout_constraintTop_toTopOf="@+id/cardView"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"/>
     </androidx.cardview.widget.CardView>
+
+
+
+
 
     <!-- 제목 -->
     <TextView
