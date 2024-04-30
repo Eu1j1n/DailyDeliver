@@ -77,7 +77,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     private ImageButton closeButton;
     private ImageView postImageView, downButtonImageView;
 
-    private  TextView priceTextView, deadline, deadlineTextView;
+    private TextView priceTextView, deadline, deadlineTextView;
     private RecyclerView imageRecyclerView;
     private EditText titleEditText;
     private EditText priceEditText;
@@ -90,7 +90,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     private BottomSheetDialog editPostDialog;
 
     private String TAG = "글쓰는 액티비티";
-
 
 
     private ProgressBar progressBar;
@@ -109,7 +108,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     int selectedButton = 0; // 기본값으로 구매 입찰 버튼값
 
 
-
     private String baseUri = "http://43.201.32.122/";
 
     String ImageUri = "http://43.201.32.122/postImage/";
@@ -119,7 +117,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     RadioButton bidButton, sellButton;
 
     TextView warningLOW;
-
 
 
     private List<Uri> selectedImageUris = new ArrayList<>();
@@ -180,14 +177,11 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         }
 
 
-
-
         Intent intent = getIntent();
         if (intent != null) {
-            userName= intent.getStringExtra("receivedID");
+            userName = intent.getStringExtra("receivedID");
             Log.d(TAG, "Received ID: " + userName);
-        }
-        else {
+        } else {
             Log.e(TAG, "No data ");
         }
 
@@ -212,10 +206,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         downButtonImageView.setOnClickListener(myClickListener);
 
 
-
-
-
-
         bidButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,9 +222,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 updateButtonBackgrounds();
             }
         });
-
-
-
 
 
         closeButton.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +245,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
 
         //  텍스트 변경을 감지하는 TextWatcher
-        priceEditText.addTextChangedListener(new TextWatcher(){ // 즉시구매가
+        priceEditText.addTextChangedListener(new TextWatcher() { // 즉시구매가
             private boolean isDeleting = false;
 
             @Override
@@ -267,7 +254,8 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -308,7 +296,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
         });
 
-         bidPriceEditText.addTextChangedListener(new TextWatcher() { //최소 입찰가
+        bidPriceEditText.addTextChangedListener(new TextWatcher() { //최소 입찰가
             private boolean isbidDeleting = false;
 
             @Override
@@ -317,46 +305,47 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-             @Override
-             public void afterTextChanged(Editable s) {
-                 bidPriceEditText.removeTextChangedListener(this);
+            @Override
+            public void afterTextChanged(Editable s) {
+                bidPriceEditText.removeTextChangedListener(this);
 
-                 String originalString = s.toString();
+                String originalString = s.toString();
 
-                 // 숫자와 쉼표만 남기고 모든 문자 제거
-                 String cleanString = originalString.replaceAll("[₩,]", "");
+                // 숫자와 쉼표만 남기고 모든 문자 제거
+                String cleanString = originalString.replaceAll("[₩,]", "");
 
-                 if (cleanString.isEmpty() && originalString.contains("₩")) {
-                     // '₩' 문자만 남아있는 경우, 텍스트를 비우고 힌트를 표시
-                     bidPriceEditText.setText("");
-                     bidPriceEditText.setHint("₩ 최저 입찰가를 입력하세요");
-                     bidPriceEditText.setTypeface(null, Typeface.NORMAL);
-                 } else {
-                     // 숫자를 쉼표 형식으로 포맷팅
-                     DecimalFormat formatter = new DecimalFormat("#,###");
-                     try {
-                         String formattedString = formatter.format(Long.parseLong(cleanString));
+                if (cleanString.isEmpty() && originalString.contains("₩")) {
+                    // '₩' 문자만 남아있는 경우, 텍스트를 비우고 힌트를 표시
+                    bidPriceEditText.setText("");
+                    bidPriceEditText.setHint("₩ 최저 입찰가를 입력하세요");
+                    bidPriceEditText.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    // 숫자를 쉼표 형식으로 포맷팅
+                    DecimalFormat formatter = new DecimalFormat("#,###");
+                    try {
+                        String formattedString = formatter.format(Long.parseLong(cleanString));
 
-                         // 입력된 텍스트를 bold체로 설정하고 ₩를 붙여서 표시
-                         formattedString = "₩" + formattedString;
-                         bidPriceEditText.setTypeface(null, Typeface.BOLD);
+                        // 입력된 텍스트를 bold체로 설정하고 ₩를 붙여서 표시
+                        formattedString = "₩" + formattedString;
+                        bidPriceEditText.setTypeface(null, Typeface.BOLD);
 
-                         // 결과를 EditText에 설정
-                         bidPriceEditText.setText(formattedString);
-                         bidPriceEditText.setSelection(bidPriceEditText.getText().length());
-                     } catch (NumberFormatException nfe) {
-                         nfe.printStackTrace();
-                     }
-                 }
+                        // 결과를 EditText에 설정
+                        bidPriceEditText.setText(formattedString);
+                        bidPriceEditText.setSelection(bidPriceEditText.getText().length());
+                    } catch (NumberFormatException nfe) {
+                        nfe.printStackTrace();
+                    }
+                }
 
-                 checkAndShowWarning();
+                checkAndShowWarning();
 
-                 bidPriceEditText.addTextChangedListener(this);
-             }
+                bidPriceEditText.addTextChangedListener(this);
+            }
 
-         });
+        });
 
 
         completeButton.setOnClickListener(new View.OnClickListener() {
@@ -402,7 +391,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                     return;
                 }
 
-                if(selectedButton == 0 && bidPrice.isEmpty()) {
+                if (selectedButton == 0 && bidPrice.isEmpty()) {
                     Toast.makeText(EditPostActivity.this, "최저입찰가를 입력하세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -413,7 +402,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                     return;
                 }
 
-                if(imageCount.equals("0/10")) {
+                if (imageCount.equals("0/10")) {
                     Toast.makeText(EditPostActivity.this, "이미지를 한장 이상 선택하세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -426,9 +415,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 sendDataToServer(selectedImageUris, userName, title, location, sendTime, price, description, latitude, longitude, saleType, bidPrice, deadlineDate);
             }
         });
-
-
-
 
 
     }
@@ -491,9 +477,8 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             });
 
 
-
     private void sendDataToServer(List<Uri> imageUris, String userName, String title, String location, String sendTime, String price, String description
-    ,double latitude, double longitude, String saleType, String bidPrice, String deadLineDate) {
+            , double latitude, double longitude, String saleType, String bidPrice, String deadLineDate) {
         // 이미지 파일 이름 목록 생성
         Map<String, String> imageNames = new LinkedHashMap<>();
 
@@ -616,14 +601,12 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         });
 
 
-
         closeButton.setOnClickListener(new View.OnClickListener() { // 닫기 !
             @Override
             public void onClick(View v) {
                 editPostDialog.dismiss(); // 다이얼로그 닫기 !
             }
         });
-
 
 
         editPostDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -704,8 +687,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
     }
 
 
-
-
     // 문자열에서 숫자만 추출하여
     private long getNumberFromString(String str) {
         str = str.replaceAll("[^0-9]", ""); // 숫자가 아닌 모든 문자 제거
@@ -745,7 +726,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         // 사용자 ID, 인덱스 및 시간 정보를 결합하여 파일 이름을 생성
         return "postImage_" + userId + "_" + title + "_" + location + "_" + index + ".jpg";
     }
-
 
 
     @Override
@@ -848,10 +828,6 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             return null;
         }
     }
-
-
-
-
 
 
 }

@@ -4,6 +4,7 @@ import com.example.dailydeliver.Chatting.ChatMessage;
 import com.example.dailydeliver.Chatting.Message;
 import com.example.dailydeliver.Fragment.HomeData;
 import com.example.dailydeliver.Fragment.PostDetailData;
+import com.example.dailydeliver.Fragment.currentBidPriceData;
 import com.example.dailydeliver.profile.CreditResponse;
 import com.example.dailydeliver.profile.CreditUpdateRequest;
 import com.google.gson.JsonArray;
@@ -66,6 +67,15 @@ public interface ApiService {
             @Query("price") String price,
             @Query("userName") String userName
     );
+
+    @GET("sendCurrentBidPrice.php")
+    Call<currentBidPriceData> getCurrentBidPrice(
+            @Query("title") String title,
+            @Query("location") String location,
+            @Query("price") String price,
+            @Query("userName") String userName
+    );
+
 
 
     @GET("send_post.php")

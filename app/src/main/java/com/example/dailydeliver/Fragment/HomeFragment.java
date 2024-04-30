@@ -162,7 +162,6 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
     }
 
 
-
     private void displayPosts(List<HomeData> posts) {
         for (HomeData data : posts) {
             String sendTime = data.getSend_time();

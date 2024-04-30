@@ -125,7 +125,6 @@ public class RechargeCreditDialogFragment extends DialogFragment {
         });
 
 
-
         // 카카오페이 버튼 클릭 시 선택한 옵션에 따라 처리
         kakaoPayButton.setOnClickListener(new View.OnClickListener() {
             @Override
