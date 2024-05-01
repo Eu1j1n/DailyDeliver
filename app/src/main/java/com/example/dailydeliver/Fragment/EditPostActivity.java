@@ -196,6 +196,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         View.OnClickListener myClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                downButtonImageView.setRotation(downButtonImageView.getRotation() + 180);
                 showBottomSheetDialog();
 
             }
@@ -555,6 +556,8 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(1);
+
+                editPostDialog.dismiss();
             }
         });
 
@@ -563,6 +566,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(3);
+
                 editPostDialog.dismiss();
             }
         });
@@ -572,6 +576,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(7);
+
                 editPostDialog.dismiss();
             }
         });
@@ -580,6 +585,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(30);
+
                 editPostDialog.dismiss();
             }
         });
@@ -588,6 +594,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(60);
+
                 editPostDialog.dismiss();
             }
         });
@@ -596,6 +603,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 setDeadlineText(90);
+
                 editPostDialog.dismiss();
             }
         });
@@ -604,6 +612,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
         closeButton.setOnClickListener(new View.OnClickListener() { // 닫기 !
             @Override
             public void onClick(View v) {
+
                 editPostDialog.dismiss(); // 다이얼로그 닫기 !
             }
         });
@@ -623,8 +632,17 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             }
         });
 
+        editPostDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                downButtonImageView.setRotation(downButtonImageView.getRotation() + 180);
+            }
+        });
+
         editPostDialog.show();
     }
+
+
 
     private void setDeadlineText(int daysToAdd) {
         Calendar calendar = Calendar.getInstance();

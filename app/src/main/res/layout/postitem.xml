@@ -31,12 +31,12 @@
             android:scaleType="centerCrop"
             android:src="@drawable/rocketlogo"/>
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/stickerImageView"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:visibility="gone"
-            android:src="@drawable/ic_sticker"
+            android:src="@drawable/ic_hammer"
             app:layout_constraintStart_toStartOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="@+id/cardView"
             android:layout_marginStart="3dp"

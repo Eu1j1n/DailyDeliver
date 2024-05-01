@@ -76,6 +76,16 @@ public interface ApiService {
             @Query("userName") String userName
     );
 
+    @GET("updateBidPrice.php")
+    Call<currentBidPriceData> updateBidPrice(
+            @Query("title") String title,
+            @Query("location") String location,
+            @Query("price") String price,
+            @Query("userName") String userName,
+            @Query("updateBidPrice") int bidPrice,
+            @Query("successfulBidder") String receivedID
+    );
+
 
 
     @GET("send_post.php")

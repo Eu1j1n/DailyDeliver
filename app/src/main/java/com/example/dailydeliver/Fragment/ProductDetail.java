@@ -90,7 +90,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     CircleIndicator3 circleIndicator;
 
-    TextView bidPrice, remainingTime, hopePriceTextView;
+    TextView bidPrice, remainingTime, hopePriceTextView,  currentServerBidPrice;
 
     RadioButton buyBidButton, buyButton;
 
@@ -122,7 +122,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         String sendTime = intent.getStringExtra("send_time");
         price = intent.getStringExtra("price");
         userName = intent.getStringExtra("user_name");
-        receivedID = intent.getStringExtra("receivedID"); // 현재 로그인한 아아
+        receivedID = intent.getStringExtra("receivedID"); // 현재 로그인한 아이디
 
 
 // 이미지 데이터 가져오기
@@ -151,6 +151,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
                 int inputBidPrice = Integer.parseInt(hopePrice);
 
+                Log.d(TAG, "inputBidPrice" + inputBidPrice);
+
 
                 String immediatePriceStr = immediatePrice.replaceAll("[^\\d.]", "");
                 int immediatePurchasePrice = Integer.parseInt(immediatePriceStr);
@@ -161,7 +163,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     selectedButton = 1;
                     updateButton();
                     radioGroup.check(R.id.buyButton);
-                    Toast.makeText(getApplicationContext(), "희망가가 즉시 구매가보다 높거나 같습니다.", Toast.LENGTH_SHORT).show();
+
                 } else {
                     fetchCreditFromServer(receivedID, inputBidPrice);
                 }
@@ -341,6 +343,55 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         });
     }
 
+    private void updateBidPriceToServer(String title, String location, String price, String userName, int bidPrice, String receivedID) {
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+        Log.d(TAG, "updateBidPriceToserver: " + bidPrice);
+
+        // 현재입찰가, 즉시 구매가 비교
+        Call<currentBidPriceData> call = apiService.updateBidPrice(title, location, price, userName, bidPrice, receivedID);
+
+        call.enqueue(new Callback<currentBidPriceData>() {
+            @Override
+            public void onResponse(Call<currentBidPriceData> call, Response<currentBidPriceData> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    currentBidPriceData updatedBidPrice = response.body();
+                    int updatedPrice = updatedBidPrice.getBidPrice();
+
+                    Log.d(TAG, "updatedPrice" + updatedPrice);
+
+
+
+                    // 즉시 구매가를 서버에서 처리 후 적절한 비교 로직 적용
+                    if (bidPrice >= Integer.parseInt(price.replace("₩", "").replace(",", ""))) {
+                        // 즉시 구매가를 초과하였을 때의 처리
+
+                        currentServerBidPrice.setText("현재입찰가 ₩" + String.format("%,d",updatedPrice));
+                    } else if (updatedPrice > bidPrice) {
+                        // 입찰가가 업데이트 되었으나, 즉시 구매가가 아닌 경우
+                        Toast.makeText(getApplicationContext(), "희망하는 가격보다 현재 입찰가가 더 높습니다.", Toast.LENGTH_SHORT).show();
+                        currentServerBidPrice.setText("현재입찰가 ₩" + String.format("%,d",updatedPrice));
+                    } else {
+                        // 입찰가가 성공적으로 업데이트된 경우
+                        currentServerBidPrice.setText("현재입찰가 ₩" + String.format("%,d", updatedPrice));
+
+                        Toast.makeText(getApplicationContext(), "입찰가가 업데이트되었습니다. 새로운 입찰가: "+ updatedPrice, Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Log.d(TAG, "서버 응답이 실패했습니다.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<currentBidPriceData> call, Throwable t) {
+                Log.e(TAG, "통신 실패123: " + t.getMessage());
+            }
+        });
+    }
+
+
+
+
     private void getcurrenTBidPrice(String title, String location, String price, String userName) {
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
@@ -357,12 +408,16 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     // 사용자가 입력한 희망가 가져오기
                     String hopePriceStr = inputBidPriceEditText.getText().toString().trim();
                     int hopePrice = Integer.parseInt(hopePriceStr.replaceAll("[^0-9]", ""));
+                    Log.d(TAG, "currentBid" + currentBid);
+                    Log.d(TAG, "hopePrice" + hopePrice);
 
                     // 희망가와 현재 입찰가 비교
                     if (hopePrice <= currentBid) {
-                        Toast.makeText(getApplicationContext(), "희망가가 현재 입찰가보다 낮습니다.", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "여기들어옴?");
+                        currentServerBidPrice.setText(String.valueOf(currentBid));
+
                     } else {
-                        // 희망가가 현재 입찰가보다 높은 경우, 크레딧을 가져오는 메소드 호출
+                        //희망가가 현재 보유 크레딧 보다 높으면
                         fetchCreditFromServer(receivedID, hopePrice);
                     }
                 } else {
@@ -386,6 +441,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
         Call<CreditResponse> call = apiService.getCredit(receiveID);
 
+        Log.d(TAG, "fetchCreditFromServer bidPrice" + bidPrice);
+
         call.enqueue(new Callback<CreditResponse>() {
             @Override
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
@@ -399,7 +456,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                         // 희망가가 현재 크레딧보다 크면 토스트를 표시
                         Toast.makeText(getApplicationContext(), "보유 크레딧이 부족합니다.", Toast.LENGTH_SHORT).show();
                     } else {
-                        // 크레딧이 충분한 경우 서버로 입찰 요청을 보낼 수 있음
+                        Log.d(TAG, "야이떄 receiveID" + receiveID);
+                        updateBidPriceToServer(title, location, price, userName, bidPrice, receiveID);
                     }
                 } else {
                     Log.e(TAG, "서버 응답이 실패했습니다.");
@@ -414,6 +472,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
     }
 
     private void fetchImmediateCreditFromServer(String receiveID, int inputImmediatePrice) {
+        // 즉시구매 눌렀을때 유저의 크레딧이 즉시구매가 보다 적은지 높은지 확인하는 메소드
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
         Call<CreditResponse> call = apiService.getCredit(receiveID);
 
@@ -421,6 +480,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             @Override
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "즉시구매 성공 로그임?");
                     CreditResponse creditResponse = response.body();
                     int currentCredit = creditResponse.getCredit();
 
@@ -430,7 +490,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                         // 희망가가 현재 크레딧보다 크면 토스트를 표시
                         Toast.makeText(getApplicationContext(), "보유 크레딧이 부족합니다.", Toast.LENGTH_SHORT).show();
                     } else {
-                        // 크레딧이 충분한 경우 서버로 입찰 요청을 보낼 수 있음
+
                     }
                 } else {
                     Log.e(TAG, "서버 응답이 실패했습니다.");
@@ -497,7 +557,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
             if (imageData.getSaleType().equals("immediate")) {
                 remainingTime.setVisibility(View.GONE);
-                bidPrice.setVisibility(View.GONE);
+                currentServerBidPrice.setVisibility(View.GONE);
 
                 hopePriceTextView.setVisibility(View.GONE);
                 inputBidPriceEditText.setVisibility(View.GONE);
@@ -514,7 +574,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                 immediateEditText.setText(imageData.getPrice() + "원");
             } else {
                 remainingTime.setVisibility(View.VISIBLE);
-                bidPrice.setVisibility(View.VISIBLE);
+                currentServerBidPrice.setVisibility(View.VISIBLE);
                 radioGroup.setVisibility(View.VISIBLE);
                 hopePriceTextView.setVisibility(View.VISIBLE);
                 inputBidPriceEditText.setVisibility(View.VISIBLE);
@@ -543,7 +603,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                 }
             }
 
-            bidPrice.setText("현재입찰가 " + imageData.getBidPrice());
+            currentServerBidPrice.setText("현재입찰가 " + imageData.getBidPrice());
 
             String location = imageData.getLocation();
             String formattedTime = TimeUtil.getTimeAgo(imageData.getSend_time());
@@ -600,9 +660,9 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
     }
 
     private void startCountdownTimer(String remainingTimeStr) {
-// 시간을 밀리초로 변환하여 카운트다운 타이머 설정
+
         long millisInFuture = parseRemainingTime(remainingTimeStr);
-// 기존 타이머가 있다면 취소
+
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
@@ -701,7 +761,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         productDetailMapView = findViewById(R.id.productDetailMapView);
         detailAddress = findViewById(R.id.detailAdress);
         expansionMapButton = findViewById(R.id.expansionMapButton);
-        bidPrice = findViewById(R.id.currentBidPrice);
+        currentServerBidPrice = findViewById(R.id.currentBidPrice);
         remainingTime = findViewById(R.id.remainingTime);
         radioGroup = findViewById(R.id.purchaseRadioGroup);
         inputBidPriceEditText = findViewById(R.id.inputBidPriceEditText);

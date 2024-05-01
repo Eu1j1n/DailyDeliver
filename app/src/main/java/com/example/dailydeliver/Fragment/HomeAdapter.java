@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private List<HomeData> homeData;
     private LayoutInflater mInflater;
@@ -51,7 +53,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
-    // onBindViewHolder 메서드 내에서
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final HomeData item = homeData.get(position);
@@ -64,13 +66,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         if (item.getSaleType().equals("bid")) {
             holder.biddingPriceTextView.setVisibility(View.VISIBLE);
-            holder.remainingTimeTextView.setVisibility(View.VISIBLE);
-            holder.biddingPriceTextView.setText("현재입찰가 " + item.getBidPrice());
             holder.stickerImageView.setVisibility(View.VISIBLE);
 
             String remainingTime = item.getRemaining_time();
 
             Log.d(TAG, "remainingTime" + remainingTime);
+            holder.remainingTimeTextView.setVisibility(View.VISIBLE);
+            holder.biddingPriceTextView.setText("현재입찰가 " + item.getBidPrice());
+
             if (remainingTime.equals("입찰 종료")) {
                 holder.remainingTimeTextView.setText("입찰 종료");
             } else {
@@ -100,12 +103,17 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                         }
                     };
                     countDownTimer.start();
+                    holder.countDownTimer = countDownTimer;
                     timersMap.put(position, countDownTimer);
+                } else {
+                    // 시간 형식이 %H:%I:%S가 아닌 경우에도 값을 설정
+                    holder.remainingTimeTextView.setText(remainingTime);
                 }
             }
         } else {
             holder.biddingPriceTextView.setVisibility(View.GONE);
             holder.remainingTimeTextView.setVisibility(View.GONE);
+            holder.remainingTimeTextView.setText(item.getRemaining_time());
             holder.stickerImageView.setVisibility(View.GONE);
         }
 
@@ -133,6 +141,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
 
+
     @Override
     public int getItemCount() {
         return homeData.size();
@@ -151,7 +160,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         TextView remainingTimeTextView;
 
-        ImageView stickerImageView;
+        CircleImageView stickerImageView;
+
+
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -178,4 +189,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return (hours * 3600 + minutes * 60 + seconds) * 1000L; // 밀리초로 변환
     }
 
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
+        // RecyclerView에서 ViewHolder가 재활용될 때 CountDownTimer를 중지
+        if (holder.countDownTimer != null) {
+            holder.countDownTimer.cancel();
+        }
+    }
 }
