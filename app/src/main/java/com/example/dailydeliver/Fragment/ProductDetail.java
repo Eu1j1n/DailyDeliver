@@ -1,10 +1,14 @@
 package com.example.dailydeliver.Fragment;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -104,6 +108,10 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     private int getCurrentBidPriceByServer;
 
+    private ImageButton likeButton;
+    private ImageButton unlikeButton;
+    private int isLiked = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +136,24 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 // 이미지 데이터 가져오기
         getImageData(title, location, price, userName);
         getProfileImage(userName);
+
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLiked = 0;
+                switchButtons();
+            }
+        });
+
+        unlikeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLiked = 1;
+                switchButtons();
+            }
+        });
+
+
 
         bidUpdateToServerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,12 +200,26 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         immediateBuyToServerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String immediatePrice = immediateEditText.getText().toString().replaceAll("[^\\d.]", "");
-                Log.d(TAG, "imeediatePrice" + immediatePrice);
-                int inputImmediatePrice = Integer.parseInt(immediatePrice);
-                fetchImmediateCreditFromServer(receivedID, inputImmediatePrice);
+                // 다이얼로그 생성
+                CustomDialog dialog = new CustomDialog(ProductDetail.this, "정말로 구매하시겠습니까?",
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // '예' 버튼이 눌렸을 때의 동작
+                                String immediatePrice = immediateEditText.getText().toString().replaceAll("[^\\d.]", "");
+                                Log.d(TAG, "imeediatePrice" + immediatePrice);
+                                int inputImmediatePrice = Integer.parseInt(immediatePrice);
+                                fetchImmediateCreditFromServer(receivedID, inputImmediatePrice);
+                            }
+                        },
+                        null);  // '아니요' 버튼은 아무 동작도 하지 않음
+
+                // 다이얼로그 표시
+                dialog.show();
             }
         });
+
+
 
 
         inputBidPriceEditText.addTextChangedListener(new TextWatcher() { // 희망가입력
@@ -316,6 +356,25 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     }
 
+    private void switchButtons() {
+        Log.d(TAG, "이떄의 isLiked" + isLiked);
+
+        switch (isLiked) {
+
+            case 0:
+
+                unlikeButton.setVisibility(View.VISIBLE);
+                likeButton.setVisibility(View.GONE);
+
+                break;
+            case 1:
+                unlikeButton.setVisibility(View.GONE);
+                likeButton.setVisibility(View.VISIBLE);
+
+                break;
+        }
+    }
+
     private void getImageData(String title, String location, String price, String userName) {
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
@@ -388,6 +447,48 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             }
         });
     }
+
+    private void updateImmediateBuyServer(String title, String location, String price, String userName, String receivedID) {
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+        // 즉시 구매 구매 확정 메소드 및 구매 state 업데이트 메소드
+
+        Call<Void> call = apiService.updateImmediateBuy(title, location, price, userName, receivedID);
+
+        Log.d(TAG, "값들" +  title + location + price + userName + receivedID);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    selectedButton = 1;
+                    buyBidButton.setEnabled(false);
+                    buyButton.setEnabled(false);
+                    immediateEditText.setText("낙찰된 제품입니다.");
+                    immediateBuyToServerButton.setEnabled(false);
+                    Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
+                    immediateBuyToServerButton.setBackground(grayButton);
+                    remainingTime.setText("입찰 종료");
+
+
+
+
+
+
+
+                } else {
+                    Log.d(TAG, "서버 응답이 실패했습니다.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "통신 실패: " + t.getMessage());
+            }
+        });
+    }
+
+
+
 
 
 
@@ -490,6 +591,9 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                         // 희망가가 현재 크레딧보다 크면 토스트를 표시
                         Toast.makeText(getApplicationContext(), "보유 크레딧이 부족합니다.", Toast.LENGTH_SHORT).show();
                     } else {
+                        updateImmediateBuyServer(title,location,price,userName,receivedID);
+
+
 
                     }
                 } else {
@@ -535,19 +639,18 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
     }
 
     private void handleImageData(List<PostDetailData> imageDataList) {
-// 이미지 데이터 목록이 비어있는지 확인
+        // 이미지 데이터 목록이 비어있는지 확인
         if (imageDataList != null && !imageDataList.isEmpty()) {
             // 첫 번째 이미지 데이터 가져오기
             PostDetailData imageData = imageDataList.get(0);
             globalBidPrice = imageData.getBidPrice();
 
-
             Log.d(TAG, "입찰가 " + imageData.getBidPrice());
             Log.d(TAG, "타입" + imageData.getSaleType());
             Log.d(TAG, "남은 시간" + imageData.getRemaining_time());
+            Log.d(TAG, "현재 상태 값 0이면 안팔림 1이면 팔림" + imageData.getState());
 
             immediatePrice = imageData.getPrice();
-
 
             if (receivedID != null && imageData.getUserName() != null && receivedID.equals(imageData.getUserName())) {
                 chatButton.setVisibility(View.GONE);
@@ -555,51 +658,67 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                 chatButton.setVisibility(View.VISIBLE);
             }
 
-            if (imageData.getSaleType().equals("immediate")) {
-                remainingTime.setVisibility(View.GONE);
-                currentServerBidPrice.setVisibility(View.GONE);
-
-                hopePriceTextView.setVisibility(View.GONE);
-                inputBidPriceEditText.setVisibility(View.GONE);
-                bidUpdateToServerButton.setVisibility(View.GONE);
-
-
-                buyButton.setChecked(true);
-                buyBidButton.setEnabled(false);
-                selectedButton = 1;
-
-                updateButton();
+            if (imageData.getState() == 1) { // 상태 값이 1일 때
+                Log.d(TAG, "handleImageData: 들어오냐" + imageData.getState());
+                Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
+                inputBidPriceEditText.setText("낙찰된 제품입니다.");
+                bidUpdateToServerButton.setBackground(grayButton);
+                bidUpdateToServerButton.setEnabled(false);
+                immediateBuyToServerButton.setEnabled(false);
 
 
-                immediateEditText.setText(imageData.getPrice() + "원");
-            } else {
-                remainingTime.setVisibility(View.VISIBLE);
-                currentServerBidPrice.setVisibility(View.VISIBLE);
-                radioGroup.setVisibility(View.VISIBLE);
-                hopePriceTextView.setVisibility(View.VISIBLE);
-                inputBidPriceEditText.setVisibility(View.VISIBLE);
-                bidUpdateToServerButton.setVisibility(View.VISIBLE);
 
 
-                priceTextView.setText("즉시구매가 " + imageData.getPrice());
-
-                // "남은 시간" 값이 카운트다운 타이머 형식인지 확인
-                if (imageData.getRemaining_time().matches("\\d{2}:\\d{2}:\\d{2}")) {
-                    // 카운트다운 타이머 시작
-                    startCountdownTimer(imageData.getRemaining_time());
-                } else if (imageData.getRemaining_time().equals("입찰 종료")) {
-                    bidUpdateToServerButton.setEnabled(false);
-                    immediateBuyToServerButton.setEnabled(false);
-                    immediateEditText.setHint("입찰이 종료되었습니다.");
-                    inputBidPriceEditText.setHint("입찰이 종료되었습니다.");
-                    immediateEditText.setEnabled(false);
-                    inputBidPriceEditText.setEnabled(false);
-                    remainingTime.setText("입찰 종료");
+                immediateEditText.setText("낙찰된 제품입니다.");
 
 
+                immediateBuyToServerButton.setBackground(grayButton);
+                remainingTime.setText("입찰 종료");
+
+
+            } else { // 상태 값이 0일 때
+
+                Log.d(TAG, "여긴아니지?");
+                if (imageData.getSaleType().equals("immediate")) {
+                    remainingTime.setVisibility(View.GONE);
+                    currentServerBidPrice.setVisibility(View.GONE);
+                    hopePriceTextView.setVisibility(View.GONE);
+                    inputBidPriceEditText.setVisibility(View.GONE);
+                    bidUpdateToServerButton.setVisibility(View.GONE);
+
+                    buyButton.setChecked(true);
+                    buyBidButton.setEnabled(false);
+                    selectedButton = 1;
+
+                    updateButton();
+
+                    immediateEditText.setText(imageData.getPrice() + "원");
                 } else {
-                    // 다른 형식의 경우 그냥 setText로 설정
-                    remainingTime.setText(imageData.getRemaining_time());
+                    remainingTime.setVisibility(View.VISIBLE);
+                    currentServerBidPrice.setVisibility(View.VISIBLE);
+                    radioGroup.setVisibility(View.VISIBLE);
+                    hopePriceTextView.setVisibility(View.VISIBLE);
+                    inputBidPriceEditText.setVisibility(View.VISIBLE);
+                    bidUpdateToServerButton.setVisibility(View.VISIBLE);
+
+                    priceTextView.setText("즉시구매가 " + imageData.getPrice());
+
+                    // "남은 시간" 값이 카운트다운 타이머 형식인지 확인
+                    if (imageData.getRemaining_time().matches("\\d{2}:\\d{2}:\\d{2}")) {
+                        // 카운트다운 타이머 시작
+                        startCountdownTimer(imageData.getRemaining_time());
+                    } else if (imageData.getRemaining_time().equals("입찰 종료")) {
+                        bidUpdateToServerButton.setEnabled(false);
+                        immediateBuyToServerButton.setEnabled(false);
+                        immediateEditText.setHint("입찰이 종료되었습니다.");
+                        inputBidPriceEditText.setHint("입찰이 종료되었습니다.");
+                        immediateEditText.setEnabled(false);
+                        inputBidPriceEditText.setEnabled(false);
+                        remainingTime.setText("입찰 종료");
+                    } else {
+                        // 다른 형식의 경우 그냥 setText로 설정
+                        remainingTime.setText(imageData.getRemaining_time());
+                    }
                 }
             }
 
@@ -608,25 +727,14 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             String location = imageData.getLocation();
             String formattedTime = TimeUtil.getTimeAgo(imageData.getSend_time());
             String text = location + " · " + formattedTime;
-
             SpannableString spannableString = new SpannableString(text);
 
-
             int startIndex = text.indexOf("·") + 2; // "●" 다음 공백 포함
-
-
             RelativeSizeSpan sizeSpan = new RelativeSizeSpan(0.8f);
-
-
             spannableString.setSpan(sizeSpan, startIndex, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-
             locationTextView.setText(spannableString);
-
             titleTextView.setText(imageData.getTitle());
-
-            Log.d(TAG, "imageData.getSendTime" + imageData.getSend_time());
-
             nicknameTextView.setText(imageData.getUserName());
             descriptionTextView.setText(imageData.getDescription());
 
@@ -637,27 +745,21 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                 getAddressFromLocation(latitude, longitude);
             }
 
-            Log.d(TAG, "latitude" + imageData.getLatitude());
-            Log.d(TAG, "longitude" + imageData.getLongitude());
-            Log.d(TAG, "imageData.getImage+uri" + imageData.getImage_uri());
-
             List<String> imageUrls = imageData.getImage_uri(); // 이미지 URI 리스트를 가져옴
-
             imagePagerAdapter = new ImagePagerAdapter(ProductDetail.this, imageUrls, new ImagePagerAdapter.OnImageClickListener() {
                 @Override
                 public void onImageClick(int position) {
                     String clickedImageUrl = imageUrls.get(position);
-                    Log.d(TAG, "clickedImageUri" + clickedImageUrl);
                     Intent intent = new Intent(ProductDetail.this, ImageDetail.class);
                     intent.putExtra("imageUrl", imageUri + clickedImageUrl);
                     startActivity(intent);
-
                 }
             });
             viewPager.setAdapter(imagePagerAdapter);
             circleIndicator.setViewPager(viewPager);
         }
     }
+
 
     private void startCountdownTimer(String remainingTimeStr) {
 
@@ -771,6 +873,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         buyBidButton = findViewById(R.id.buyBidButton);
         immediateEditText = findViewById(R.id.immediateEditText);
         immediateBuyToServerButton = findViewById(R.id.immediateBuyToServerButton);
+        likeButton = findViewById(R.id.likeButton);
+        unlikeButton = findViewById(R.id.unlikeButton);
 
     }
 

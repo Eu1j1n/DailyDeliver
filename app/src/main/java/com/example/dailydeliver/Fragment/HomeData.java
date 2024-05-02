@@ -18,6 +18,8 @@ public class HomeData {
 
     private String remaining_time;
 
+    private int state;
+
 
 
     public String getDescription() {
@@ -44,8 +46,16 @@ public class HomeData {
         this.bidPrice = bidPrice;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public HomeData(String image_uri, String title, String location, String send_time, String price, String userName
-    , String description, String saleType, String bidPrice, String remaining_time) {
+    , String description, String saleType, String bidPrice, String remaining_time, int state) {
         this.image_uri = image_uri;
         this.title = title;
         this.location = location;
@@ -56,6 +66,7 @@ public class HomeData {
         this.saleType = saleType;
         this.bidPrice = bidPrice;
         this.remaining_time = remaining_time;
+        this.state = state;
     }
 
     public String getImage_uri() {

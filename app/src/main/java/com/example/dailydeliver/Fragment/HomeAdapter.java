@@ -64,7 +64,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         holder.priceTextView.setText("즉시구매가 " + item.getPrice());
         holder.userNametextView.setText(item.getUserName());
 
-        if (item.getSaleType().equals("bid")) {
+        if (item.getState() == 1) {
+            holder.remainingTimeTextView.setVisibility(View.VISIBLE);
+            holder.remainingTimeTextView.setText("입찰 종료");
+            holder.biddingPriceTextView.setText("입찰이 종료되었습니다.");
+            holder.soldOutImageView.setVisibility(View.VISIBLE);
+
+
+
+        } else if (item.getSaleType().equals("bid")) {
             holder.biddingPriceTextView.setVisibility(View.VISIBLE);
             holder.stickerImageView.setVisibility(View.VISIBLE);
 
@@ -142,6 +150,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
 
 
+
     @Override
     public int getItemCount() {
         return homeData.size();
@@ -162,6 +171,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         CircleImageView stickerImageView;
 
+        CircleImageView soldOutImageView;
+
 
 
         ViewHolder(View itemView) {
@@ -175,6 +186,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             biddingPriceTextView = itemView.findViewById(R.id.biddingPriceTextView);
             remainingTimeTextView = itemView.findViewById(R.id.remainingTimeTextView);
             stickerImageView = itemView.findViewById(R.id.stickerImageView);
+            soldOutImageView = itemView.findViewById(R.id.soldOutImageView);
         }
     }
 
@@ -190,9 +202,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
         super.onViewRecycled(holder);
-        // RecyclerView에서 ViewHolder가 재활용될 때 CountDownTimer를 중지
+
         if (holder.countDownTimer != null) {
             holder.countDownTimer.cancel();
         }

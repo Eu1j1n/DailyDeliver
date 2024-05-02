@@ -22,6 +22,8 @@ public class PostDetailData {
 
     private String remaining_time;
 
+    private int state;
+
     public String getSaleType() {
         return saleType;
     }
@@ -62,8 +64,17 @@ public class PostDetailData {
         this.longitude = longitude;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public PostDetailData(List<String> image_uri, String title, String location, String send_time, String price, String userName
-            , String description, Double latitude, Double longitude, String saleType, String bidPrice, String remaining_time) {
+            , String description, Double latitude, Double longitude, String saleType, String bidPrice, String remaining_time
+               , int state) {
         this.image_uri = image_uri;
         this.title = title;
         this.location = location;
@@ -76,6 +87,8 @@ public class PostDetailData {
         this.saleType = saleType;
         this.bidPrice = bidPrice;
         this.remaining_time = remaining_time;
+        this.state = state;
+
     }
 
     public List<String> getImage_uri() {

@@ -86,6 +86,15 @@ public interface ApiService {
             @Query("successfulBidder") String receivedID
     );
 
+    @POST("updateImmediateBuy.php")
+    Call<Void> updateImmediateBuy(
+            @Query("title") String title,
+            @Query("location") String location,
+            @Query("price") String price,
+            @Query("userName") String userName,
+            @Query("successfulBidder") String receivedID
+    );
+
 
 
     @GET("send_post.php")

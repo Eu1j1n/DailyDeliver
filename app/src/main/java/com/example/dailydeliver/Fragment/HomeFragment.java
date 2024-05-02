@@ -139,7 +139,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
                         String saleType = data.getSaleType();
                         String bidPrice = data.getBidPrice();
                         String remaining_time = data.getRemaining_time();
-                        Log.d(TAG, "onResponre" + remaining_time);
+                        int state = data.getState();
+                        Log.d(TAG, "onResponre" + state);
 
                         Log.d(TAG, "bidPrice" + bidPrice);
 

@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.dailydeliver.Activity.LoginActivity;
 import com.example.dailydeliver.ApiService;
+import com.example.dailydeliver.Fragment.CustomDialog;
 import com.example.dailydeliver.ImageResponse;
 import com.example.dailydeliver.R;
 import com.example.dailydeliver.RetrofitClient;
@@ -231,22 +232,28 @@ public class UserProfileFragment extends Fragment implements RechargeCreditDialo
                 if (result.getResultCode() == RESULT_OK) {
                     Intent intent = result.getData();
                     if (intent != null) {
-
                         selectedImageUri = intent.getData();
                         if (selectedImageUri != null) {
                             // 앨범에서 선택한 이미지인 경우
                             // 이미지를 서버에 업로드
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("프로필 사진 변경")
-                                    .setMessage("프로필 사진을 변경하시겠습니까?")
-                                    .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                            CustomDialog dialog = new CustomDialog(getActivity(),
+                                    "프로필 사진을 변경하시겠습니까?",
+                                    new View.OnClickListener() {
                                         @Override
-                                        public void onClick(DialogInterface dialog, int which) {
+                                        public void onClick(View v) {
+                                            // '예' 버튼이 클릭된 경우
                                             uploadProfileImage(selectedImageUri, receiveID, view);
+
                                         }
-                                    })
-                                    .setNegativeButton("아니오", null)
-                                    .show();
+                                    },
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            // '아니오' 버튼이 클릭된 경우
+
+                                        }
+                                    });
+                            dialog.show();
                         } else {
                             // 카메라로 찍은 이미지인 경우
                             // 이미지를 파일로 저장하고 해당 파일의 Uri를 가져옵니다.
@@ -254,23 +261,31 @@ public class UserProfileFragment extends Fragment implements RechargeCreditDialo
                             if (imageFile != null) {
                                 selectedImageUri = Uri.fromFile(imageFile);
                                 // 파일로 저장한 이미지를 서버에 업로드하기 전에 사용자에게 물어봅니다.
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle("프로필 사진 변경")
-                                        .setMessage("프로필 사진을 변경하시겠습니까?")
-                                        .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                CustomDialog dialog = new CustomDialog(getActivity(),
+                                        "프로필 사진을 변경하시겠습니까?",
+                                        new View.OnClickListener() {
                                             @Override
-                                            public void onClick(DialogInterface dialog, int which) {
+                                            public void onClick(View v) {
+                                                // '예' 버튼이 클릭된 경우
                                                 uploadProfileImage(selectedImageUri, receiveID, view);
+
                                             }
-                                        })
-                                        .setNegativeButton("아니오", null)
-                                        .show();
+                                        },
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                // '아니오' 버튼이 클릭된 경우
+
+                                            }
+                                        });
+                                dialog.show();
                             }
                         }
                     }
                 }
             }
         });
+
 
 
         if (args != null) {

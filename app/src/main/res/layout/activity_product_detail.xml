@@ -48,11 +48,10 @@
                 <!-- CircleImageView와 닉네임, 위치를 담는 수평 LinearLayout -->
 
                 <!-- 제목 텍스트뷰 -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <!-- CircleImageView -->
@@ -67,6 +66,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/profileImageView"
                         android:orientation="vertical">
 
                         <!-- 닉네임 텍스트뷰 -->
@@ -89,10 +89,28 @@
                             android:textSize="16sp" />
                     </LinearLayout>
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-                </LinearLayout>
+                    <!-- Unlike 버튼 -->
+                    <ImageButton
+                        android:id="@+id/unlikeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@color/white"
+                        android:src="@drawable/ic_unlikebutton" />
+
+                    <ImageButton
+                        android:id="@+id/likeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@color/white"
+                        android:visibility="gone"
+                        android:src="@drawable/ic_likebutton" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/titleTextView"

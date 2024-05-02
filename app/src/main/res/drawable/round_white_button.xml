@@ -1,0 +1,20 @@
+<!-- round_button_white_with_orange_border.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Inner white background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Inner white background -->
+            <corners android:radius="20dp"/> <!-- Rounded corners -->
+        </shape>
+    </item>
+    <!-- Outer orange border -->
+    <item android:right="1dp" android:left="1dp" android:top="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Inner white background -->
+            <stroke
+                android:width="2dp"
+                android:color="#FFA500"/> <!-- Orange border -->
+            <corners android:radius="20dp"/> <!-- Rounded corners -->
+        </shape>
+    </item>
+</layer-list>
