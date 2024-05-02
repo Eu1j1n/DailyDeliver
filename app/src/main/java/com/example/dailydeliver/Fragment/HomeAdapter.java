@@ -58,6 +58,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final HomeData item = homeData.get(position);
         holder.productTitle.setText(item.getTitle());
+        holder.soldOutImageView.setVisibility(View.GONE);
         holder.locationTextView.setText(item.getLocation());
         holder.timeTextView.setText(item.getSend_time());
         Log.d(TAG, "time" + item.getSend_time());

@@ -12,7 +12,7 @@
         android:id="@+id/appLogo"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="130dp"
         android:text="Daily Deliver"
         android:src="@drawable/ic_appmarket"
         android:textColor="@color/colorPrimary"
@@ -21,39 +21,60 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- ID 입력란 -->
-    <EditText
-        android:id="@+id/editID"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editIDLayout"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:hint="ID"
-        android:inputType="textEmailAddress"
-        android:layout_marginTop="16dp"
+        app:boxStrokeColor="@color/carrot"
+        app:hintTextColor="@color/carrot"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintTop_toBottomOf="@+id/appLogo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Password 입력란 -->
-    <EditText
-        android:id="@+id/editPassword"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editPasswordLayout"
         android:layout_width="250dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/editID"
+        app:boxStrokeColor="@color/carrot"
+        app:hintTextColor="@color/carrot"
+        app:passwordToggleEnabled="true"
+
+        app:layout_constraintTop_toBottomOf="@+id/editIDLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- 로그인 버튼 -->
-    <android.widget.Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:background="@drawable/green_button"
+        app:backgroundTint="@color/carrot"
         android:textColor="#fff"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/editPassword"
+        app:layout_constraintTop_toBottomOf="@+id/editPasswordLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -63,6 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="회원가입"
+        android:textSize="15dp"
         android:textColor="@color/black"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/loginButton"
@@ -78,6 +100,7 @@
         android:clickable="true"
         android:focusable="true"
         android:text="ID 찾기 /"
+        android:textSize="15dp"
         android:layout_marginRight="50dp"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,6 +115,7 @@
         android:clickable="true"
         android:focusable="true"
         android:text=" PW 찾기"
+        android:textSize="15dp"
         android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/forgotID"
         app:layout_constraintTop_toTopOf="@+id/forgotID" />
@@ -99,8 +123,8 @@
     <!-- 카카오 버튼 -->
     <ImageButton
         android:id="@+id/kakaobtn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="25dp"
         android:layout_marginLeft="5dp"
         android:background="@color/white"
@@ -116,7 +140,6 @@
         android:id="@+id/googlebtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-
         android:background="@color/white"
         android:scaleType="centerCrop"
         android:src="@drawable/googlebtn"
@@ -127,8 +150,8 @@
     <!-- 네이버 버튼 -->
     <ImageButton
         android:id="@+id/naverbtn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginRight="5dp"
         android:background="@color/white"
         android:scaleType="centerCrop"
