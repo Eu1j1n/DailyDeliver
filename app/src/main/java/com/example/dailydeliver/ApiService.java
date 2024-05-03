@@ -30,11 +30,24 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
+    @POST("postLikes.php")
+    Call<Void> sendLikeRequest(@Query("title") String title,
+                               @Query("location") String location,
+                               @Query("price") String price,
+                               @Query("userName") String userName);
+
 
     @POST("rechargeCredit.php")
     Call<ResponseBody> updateCredit(@Body CreditUpdateRequest request);
     @GET("sendUserCredit.php")
     Call<CreditResponse> getCredit(@Query("receiveID") String receiveID);
+
+    @POST("updateUserCredit.php")
+    Call<Void> updateUserCredit(
+            @Query("userId") String userId,
+            @Query("price") String price
+
+    );
 
 
 

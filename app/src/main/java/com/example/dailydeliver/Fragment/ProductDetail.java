@@ -88,6 +88,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
 
     private ImagePagerAdapter imagePagerAdapter;
 
+
+
     String baseUri = "http://43.201.32.122/";
 
     String imageUri = "http://43.201.32.122/postImage/";
@@ -464,16 +466,17 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     buyBidButton.setEnabled(false);
                     buyButton.setEnabled(false);
                     immediateEditText.setText("낙찰된 제품입니다.");
+
                     immediateBuyToServerButton.setEnabled(false);
                     Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
                     immediateBuyToServerButton.setBackground(grayButton);
                     remainingTime.setText("입찰 종료");
 
+                    updateCreditOnServer(receivedID, price);
 
-
-
-
-
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
 
                 } else {
                     Log.d(TAG, "서버 응답이 실패했습니다.");
@@ -486,6 +489,32 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             }
         });
     }
+
+    private void updateCreditOnServer(String userId, String price) {
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+
+        Call<Void> call = apiService.updateUserCredit(userId, price);
+
+        Log.d(TAG, "userID" + userId + "price" + price);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    // 성공적으로 업데이트된 경우
+                    Log.d(TAG, "사용자 credit 업데이트 성공");
+                } else {
+                    Log.d(TAG, "사용자 credit 업데이트 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "통신 실패: " + t.getMessage());
+            }
+        });
+    }
+
 
 
 
@@ -571,6 +600,34 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             }
         });
     }
+
+    private void sendLikeRequest(String title, String location, String price, String userName) {
+        // Retrofit 인터페이스를 사용하여 서버에 요청을 보냄
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+
+        // 서버에 보낼 쿼리 매개변수 설정
+        Call<Void> call = apiService.sendLikeRequest(title, location, price, userName);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    // 성공적으로 요청을 보낸 경우
+                    // 여기에 성공 처리를 추가하세요 (예: UI 업데이트)
+                } else {
+                    // 요청이 실패한 경우
+                    Log.d(TAG, "서버 응답이 실패했습니다.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                // 통신이 실패한 경우
+                Log.e(TAG, "통신 실패: " + t.getMessage());
+            }
+        });
+    }
+
 
     private void fetchImmediateCreditFromServer(String receiveID, int inputImmediatePrice) {
         // 즉시구매 눌렀을때 유저의 크레딧이 즉시구매가 보다 적은지 높은지 확인하는 메소드
@@ -659,25 +716,38 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             }
 
             if (imageData.getState() == 1) { // 상태 값이 1일 때
-                Log.d(TAG, "handleImageData: 들어오냐" + imageData.getState());
-                Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
-                inputBidPriceEditText.setText("낙찰된 제품입니다.");
-                bidUpdateToServerButton.setBackground(grayButton);
-                bidUpdateToServerButton.setEnabled(false);
-                immediateBuyToServerButton.setEnabled(false);
+                if (imageData.getSaleType().equals("bid")) {
+                    // bid 타입인 경우의 처리
+                    Log.d(TAG, "handleImageData: bid 타입 처리");
+                    Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
+                    inputBidPriceEditText.setText("낙찰된 제품입니다.");
+                    bidUpdateToServerButton.setBackground(grayButton);
+                    bidUpdateToServerButton.setEnabled(false);
+                    immediateBuyToServerButton.setEnabled(false);
+
+                    immediateEditText.setText("낙찰된 제품입니다.");
+                    immediateBuyToServerButton.setBackground(grayButton);
+                    remainingTime.setText("입찰 종료");
+                } else if (imageData.getSaleType().equals("immediate")) {
+                    // immediate 타입인 경우의 처리
+                    Log.d(TAG, "handleImageData: immediate 타입 처리");
+                    buyButton.setChecked(true);
+                    buyBidButton.setEnabled(false);
+                    inputBidPriceEditText.setEnabled(false);
+                    inputBidPriceEditText.setVisibility(View.GONE);
+                    priceTextView.setText("즉시구매가 " + imageData.getPrice());
+                    bidUpdateToServerButton.setVisibility(View.GONE);
+                    currentServerBidPrice.setVisibility(View.GONE);
+                    immediateEditText.setVisibility(View.VISIBLE);
 
 
-
-
-                immediateEditText.setText("낙찰된 제품입니다.");
-
-
-                immediateBuyToServerButton.setBackground(grayButton);
-                remainingTime.setText("입찰 종료");
-
-
+                    Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
+                    immediateEditText.setText("판매가 완료되었습니다.");
+                    immediateBuyToServerButton.setBackground(grayButton);
+                    immediateBuyToServerButton.setEnabled(false);
+                    remainingTime.setText("입찰 종료");
+                }
             } else { // 상태 값이 0일 때
-
                 Log.d(TAG, "여긴아니지?");
                 if (imageData.getSaleType().equals("immediate")) {
                     remainingTime.setVisibility(View.GONE);
@@ -686,12 +756,13 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     inputBidPriceEditText.setVisibility(View.GONE);
                     bidUpdateToServerButton.setVisibility(View.GONE);
 
+
                     buyButton.setChecked(true);
                     buyBidButton.setEnabled(false);
                     selectedButton = 1;
 
                     updateButton();
-
+                    priceTextView.setText("즉시구매가 " + imageData.getPrice() + "원");
                     immediateEditText.setText(imageData.getPrice() + "원");
                 } else {
                     remainingTime.setVisibility(View.VISIBLE);
@@ -759,6 +830,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             circleIndicator.setViewPager(viewPager);
         }
     }
+
 
 
     private void startCountdownTimer(String remainingTimeStr) {
@@ -835,7 +907,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                                 .into(profileImageView);
                     } else {
                         // 링크가 없는 경우 기본 이미지로 설정
-                        profileImageView.setImageResource(R.drawable.applogo);
+                        profileImageView.setImageResource(R.drawable.marketapplogo);
                     }
                 } else {
                     Log.d(TAG, "응답 실패");

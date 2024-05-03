@@ -220,6 +220,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
             @Override
             public void onClick(View v) {
                 selectedButton = 1; // 즉시 판매 버튼을 선택한 상태로 변경
+
                 updateButtonBackgrounds();
             }
         });
@@ -663,6 +664,7 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
                 bidPriceEditText.setVisibility(View.VISIBLE);
                 bidPriceTextView.setVisibility(View.VISIBLE);
                 priceTextView.setText("즉시판매가");
+                priceEditText.setText("");
                 editPostTextView.setText("판매 입찰");
                 deadline.setVisibility(View.VISIBLE);
                 deadlineTextView.setVisibility(View.VISIBLE);
@@ -672,6 +674,8 @@ public class EditPostActivity extends AppCompatActivity implements ImageAdapter.
 
                 bidPriceEditText.setVisibility(View.GONE);
                 bidPriceTextView.setVisibility(View.GONE);
+                bidPriceEditText.setText("");
+                warningLOW.setVisibility(View.GONE);
                 priceTextView.setText("가격");
                 editPostTextView.setText("즉시 판매");
                 deadline.setVisibility(View.GONE);

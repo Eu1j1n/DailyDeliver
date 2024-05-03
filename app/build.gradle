@@ -46,6 +46,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'org.java-websocket:Java-WebSocket:1.5.1'
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-auth")
     implementation "com.naver.maps:map-sdk:3.16.2"
     implementation 'androidx.privacysandbox.tools:tools-core:+'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'

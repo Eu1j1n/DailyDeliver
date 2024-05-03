@@ -128,10 +128,12 @@ public class LoginActivity extends AppCompatActivity {
                 String receiveID = editID.getText().toString();
                 String receivePassword = editPassword.getText().toString();
 
+                String hashPassword = HashPassword.sha256(receivePassword);
+
                 ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
                 // Retrofit을 사용하여 로그인 요청 전송
-                Call<ResponseBody> call = apiService.loginUser(receiveID, receivePassword);
+                Call<ResponseBody> call = apiService.loginUser(receiveID, hashPassword);
 
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
