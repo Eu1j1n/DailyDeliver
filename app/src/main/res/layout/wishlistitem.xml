@@ -1,0 +1,181 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+
+
+
+        <!-- 카드뷰 내부에 이미지뷰를 배치합니다. -->
+        <ImageView
+            android:id="@+id/wishProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/rocketlogo"/>
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/wishSoldOutImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_soldout"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView"
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/cardView"
+            app:layout_constraintTop_toTopOf="@+id/cardView"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/wishStickerImageView"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_hammer"
+            app:layout_constraintStart_toStartOf="@+id/cardView"
+            app:layout_constraintTop_toTopOf="@+id/cardView"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"/>
+    </androidx.cardview.widget.CardView>
+
+
+
+
+
+    <!-- 제목 -->
+    <TextView
+        android:id="@+id/wishProductTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintEnd_toStartOf="@+id/wishRemainingTimeTextView"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- 남은 시간 -->
+    <TextView
+        android:id="@+id/wishRemainingTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="남은 시간"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/wishProductTitle"
+        app:layout_constraintBottom_toBottomOf="@+id/wishProductTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"/>
+    <!-- 지역 -->
+    <TextView
+        android:id="@+id/wishLocationTextView"
+
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/wishProductTitle"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintEnd_toStartOf="@+id/timeTextView"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_width="wrap_content"/>
+
+    <!-- 시간 -->
+    <TextView
+        android:id="@+id/wishTimeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="몇시간 전"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/wishProductTitle"
+        app:layout_constraintStart_toEndOf="@+id/wishLocationTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"/>
+
+
+
+    <TextView
+        android:id="@+id/wishBiddingPriceTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="현재 입찰가"
+        android:textSize="22sp"
+        android:visibility="visible"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/wishTimeTextView"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"/>
+
+
+
+    <TextView
+        android:id="@+id/wishUsernameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="사용자 이름"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <TextView
+        android:id="@+id/wishPriceTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="즉시 구매가"
+        android:textSize="14sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintTop_toBottomOf="@+id/wishBiddingPriceTextView" />
+
+    <!-- 아이템 뷰의 하단 수평선 -->
+    <View
+        android:id="@+id/horizontalDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

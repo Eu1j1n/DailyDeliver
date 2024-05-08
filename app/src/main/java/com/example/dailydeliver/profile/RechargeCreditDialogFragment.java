@@ -3,6 +3,7 @@ package com.example.dailydeliver.profile;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -129,37 +130,43 @@ public class RechargeCreditDialogFragment extends DialogFragment {
         kakaoPayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int updatedCredit = getPrice();
-                // CreditUpdateRequest 객체를 생성하여 Retrofit을 통해 서버에 전송
-                CreditUpdateRequest request = new CreditUpdateRequest(receivedID, updatedCredit);
-                ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
-                Call<ResponseBody> call = apiService.updateCredit(request);
-                Log.d(TAG, "receivedID" + receivedID);
-                Log.d(TAG, "updatedCredit" + updatedCredit);
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            if (creditUpdateListener != null) {
-                                creditUpdateListener.onCreditUpdated(receivedID);
-                            }
-
-                            Log.d(TAG, "크레딧 업데이트 성공");
-                        } else {
-                            // 크레딧 업데이트 실패
-                            Log.e(TAG, "크레딧 업데이트 실패");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        // 네트워크 오류 등으로 요청 실패
-                        Log.e(TAG, "크레딧 업데이트 요청 실패", t);
-                    }
-                });
-
-                // 다이얼로그를 닫기
-                dismiss();
+                String productName = "모두의마켓 크레딧";
+                Integer updatedCredit = getPrice();
+                Intent intent = new Intent(getActivity(), KakaoPayWebViewActivity.class);
+                intent.putExtra("productName", productName);
+                intent.putExtra("updatedCredit", updatedCredit);
+                startActivity(intent);
+//                int updatedCredit = getPrice();
+//                // CreditUpdateRequest 객체를 생성하여 Retrofit을 통해 서버에 전송
+//                CreditUpdateRequest request = new CreditUpdateRequest(receivedID, updatedCredit);
+//                ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+//                Call<ResponseBody> call = apiService.updateCredit(request);
+//                Log.d(TAG, "receivedID" + receivedID);
+//                Log.d(TAG, "updatedCredit" + updatedCredit);
+//                call.enqueue(new Callback<ResponseBody>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                        if (response.isSuccessful()) {
+//                            if (creditUpdateListener != null) {
+//                                creditUpdateListener.onCreditUpdated(receivedID);
+//                            }
+//
+//                            Log.d(TAG, "크레딧 업데이트 성공");
+//                        } else {
+//                            // 크레딧 업데이트 실패
+//                            Log.e(TAG, "크레딧 업데이트 실패");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                        // 네트워크 오류 등으로 요청 실패
+//                        Log.e(TAG, "크레딧 업데이트 요청 실패", t);
+//                    }
+//                });
+//
+//                // 다이얼로그를 닫기
+//                dismiss();
             }
         });
         builder.setView(view)
@@ -173,7 +180,7 @@ public class RechargeCreditDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    private int getPrice() {
+    private Integer getPrice() {
         // 각 체크박스의 가격을 리턴
         if (option1CheckBox.isChecked()) {
             return 9900;
@@ -188,9 +195,10 @@ public class RechargeCreditDialogFragment extends DialogFragment {
         } else if (option6CheckBox.isChecked()) {
             return 199000;
         } else {
-            return 0; // 가격이 없는 경우
+            return null; // 가격이 없는 경우
         }
     }
+
 
     // 선택된 체크박스를 제외 모든 체크박스의 선택 상태 초기화
     private void clearAllCheckExcept(CheckBox selectedCheckBox) {

@@ -135,8 +135,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         receivedID = intent.getStringExtra("receivedID"); // 현재 로그인한 아이디
 
 
-// 이미지 데이터 가져오기
-        getImageData(title, location, price, userName);
+
+        getImageData(title, location, price, userName ,receivedID);
         getProfileImage(userName);
 
         likeButton.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +144,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             public void onClick(View v) {
                 isLiked = 0;
                 switchButtons();
+                sendUnLikeRequest(title,location,price,userName, receivedID);
+
             }
         });
 
@@ -152,6 +154,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             public void onClick(View v) {
                 isLiked = 1;
                 switchButtons();
+                sendLikeRequest(title,location,price,userName, receivedID);
             }
         });
 
@@ -377,10 +380,10 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         }
     }
 
-    private void getImageData(String title, String location, String price, String userName) {
+    private void getImageData(String title, String location, String price, String userName, String receivedID) {
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
-        Call<List<PostDetailData>> call = apiService.getPostDetail(title, location, price, userName);
+        Call<List<PostDetailData>> call = apiService.getPostDetail(title, location, price, userName, receivedID);
 
 
         call.enqueue(new Callback<List<PostDetailData>>() {
@@ -601,19 +604,66 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
         });
     }
 
-    private void sendLikeRequest(String title, String location, String price, String userName) {
+    private void sendUnLikeRequest(String title, String location, String price, String userName, String receivedID) {
+        // LikeData 객체 생성
+        UnLikeData unLikeData = new UnLikeData();
+        unLikeData.setTitle(title);
+        unLikeData.setLocation(location);
+        unLikeData.setPrice(price);
+        unLikeData.setUserName(userName);
+        unLikeData.setReceiveID(receivedID);
+
         // Retrofit 인터페이스를 사용하여 서버에 요청을 보냄
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
-        // 서버에 보낼 쿼리 매개변수 설정
-        Call<Void> call = apiService.sendLikeRequest(title, location, price, userName);
+        // 서버에 LikeData 객체를 전송
+        Call<Void> call = apiService.sendUnLikeRequest(unLikeData);
+
+        Log.d(TAG, "title location price userName " + title + location + price + userName);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    // 성공적으로 요청을 보낸 경우
-                    // 여기에 성공 처리를 추가하세요 (예: UI 업데이트)
+                    Log.d(TAG, "onResponse: 어케됨??");
+
+                } else {
+                    // 요청이 실패한 경우
+                    Log.d(TAG, "서버 응답이 실패했습니다.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                // 통신이 실패한 경우
+                Log.e(TAG, "통신 실패: " + t.getMessage());
+            }
+        });
+    }
+
+    private void sendLikeRequest(String title, String location, String price, String userName, String receivedID) {
+        // LikeData 객체 생성
+        LikeData likeData = new LikeData();
+        likeData.setTitle(title);
+        likeData.setLocation(location);
+        likeData.setPrice(price);
+        likeData.setUserName(userName);
+        likeData.setReceiveID(receivedID);
+
+        // Retrofit 인터페이스를 사용하여 서버에 요청을 보냄
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+
+        // 서버에 LikeData 객체를 전송
+        Call<Void> call = apiService.sendLikeRequest(likeData);
+
+        Log.d(TAG, "title location price userName " + title + location + price + userName);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "onResponse: 어케됨??");
+
                 } else {
                     // 요청이 실패한 경우
                     Log.d(TAG, "서버 응답이 실패했습니다.");
@@ -705,7 +755,15 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             Log.d(TAG, "입찰가 " + imageData.getBidPrice());
             Log.d(TAG, "타입" + imageData.getSaleType());
             Log.d(TAG, "남은 시간" + imageData.getRemaining_time());
-            Log.d(TAG, "현재 상태 값 0이면 안팔림 1이면 팔림" + imageData.getState());
+            Log.d(TAG, "좋아요값" + imageData.getLikeStatus());
+
+            if (imageData.getLikeStatus() == 1) {
+                isLiked = 1; // 좋아요 상태
+            } else {
+                isLiked = 0; // 좋아요 취소 상태
+            }
+            switchButtons();
+
 
             immediatePrice = imageData.getPrice();
 

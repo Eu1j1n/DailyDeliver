@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.dailydeliver.Chatting.ChatFragment;
 import com.example.dailydeliver.Fragment.HomeFragment;
 import com.example.dailydeliver.R;
+import com.example.dailydeliver.WishListFragment;
 import com.example.dailydeliver.profile.UserProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     UserProfileFragment userProfileFragment;
 
     ChatFragment chatFragment;
+
+    WishListFragment wishListFragment;
 
     String TAG = "메인 액티비티";
 
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         homeFragment = new HomeFragment();
         userProfileFragment = new UserProfileFragment();
         chatFragment = new ChatFragment();
+        wishListFragment = new WishListFragment();
 
         Bundle homeBundle = new Bundle();
         homeBundle.putString("receivedID", receivedID);
@@ -89,7 +93,11 @@ public class MainActivity extends AppCompatActivity {
                         chatFragment.setArguments(bundle);
                         break;
                     case R.id.bottom_wish:
-                        // 추가 기능 처리
+                        selectedFragment = wishListFragment;
+                        Bundle wishBundle = new Bundle();
+                        wishBundle.putString("receivedID", receivedID);
+                        chatFragment.setArguments(wishBundle);
+
                         break;
                     case R.id.bottom_mypage:
                         // 마이페이지로 이동

@@ -1,16 +1,19 @@
 package com.example.dailydeliver;
 
 import com.example.dailydeliver.Chatting.ChatMessage;
-import com.example.dailydeliver.Chatting.Message;
 import com.example.dailydeliver.Fragment.HomeData;
+import com.example.dailydeliver.Fragment.KakaoPayLoad;
+import com.example.dailydeliver.Fragment.LikeData;
 import com.example.dailydeliver.Fragment.PostDetailData;
+import com.example.dailydeliver.Fragment.UnLikeData;
 import com.example.dailydeliver.Fragment.currentBidPriceData;
 import com.example.dailydeliver.profile.CreditResponse;
 import com.example.dailydeliver.profile.CreditUpdateRequest;
+import com.example.dailydeliver.profile.KakaoPayReadyResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -30,11 +34,27 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
+    @POST("online/v1/payment/ready")
+    Call<KakaoPayReadyResponse> readyKakaoPay(
+            @Header("Authorization") String authorization,
+            @Body Map<String, Object> data
+    );
+
+
+    @POST("v1/payment/approve")
+    @FormUrlEncoded
+    Call<KakaoPayLoad> approveKakaoPay(
+            @Header("Authorization") String authorization,
+            @FieldMap HashMap<String, String> map
+    );
+
     @POST("postLikes.php")
-    Call<Void> sendLikeRequest(@Query("title") String title,
-                               @Query("location") String location,
-                               @Query("price") String price,
-                               @Query("userName") String userName);
+    Call<Void> sendLikeRequest(@Body LikeData likeData);
+
+    @POST("postUnLikes.php")
+    Call<Void> sendUnLikeRequest(@Body UnLikeData unLikeData);
+
+
 
 
     @POST("rechargeCredit.php")
@@ -78,7 +98,8 @@ public interface ApiService {
             @Query("title") String title,
             @Query("location") String location,
             @Query("price") String price,
-            @Query("userName") String userName
+            @Query("userName") String userName,
+            @Query("receiveID") String receiveID
     );
 
     @GET("sendCurrentBidPrice.php")

@@ -24,6 +24,8 @@ public class PostDetailData {
 
     private int state;
 
+    private int likeStatus;
+
     public String getSaleType() {
         return saleType;
     }
@@ -72,9 +74,17 @@ public class PostDetailData {
         this.state = state;
     }
 
+    public int getLikeStatus() {
+        return likeStatus;
+    }
+
+    public void setLikeStatus(int likeStatus) {
+        this.likeStatus = likeStatus;
+    }
+
     public PostDetailData(List<String> image_uri, String title, String location, String send_time, String price, String userName
             , String description, Double latitude, Double longitude, String saleType, String bidPrice, String remaining_time
-               , int state) {
+               , int state, int likeStatus) {
         this.image_uri = image_uri;
         this.title = title;
         this.location = location;
@@ -88,6 +98,7 @@ public class PostDetailData {
         this.bidPrice = bidPrice;
         this.remaining_time = remaining_time;
         this.state = state;
+        this.likeStatus = likeStatus;
 
     }
 
