@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -95,7 +97,7 @@ private TextInputEditText editPassword, checkPassword, accountNumber, name, id,
 private EditText address;
 private TextView noMatchPasswordMessage, matchPasswordMessage ,pwcheckTextView;
 private Button registerButton, checkIdButton, postCodeButton, phoneNumberCheckButton,
-        confirmPhoneNumberButton;
+        confirmPhoneNumberButton, certificateDongNaeButton;
 
 private ImageButton backButton;
 
@@ -128,10 +130,12 @@ protected void onCreate(Bundle savedInstanceState) {
     idChangeCheck();
 
 
+
+
     phoneNumberCheckButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // 전화번호 EditText에서 전화번호를 가져옵니다.
+
             String phoneNumber = phoneNumberEditText.getText().toString().trim();
             String koreaPhoneNumber = "+82" + phoneNumber;
 
@@ -169,6 +173,33 @@ protected void onCreate(Bundle savedInstanceState) {
 
         }
     });
+
+    activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+
+                }
+            });
+
+    certificateDongNaeButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // 주소 입력란의 내용을 가져옴
+            String editAddress = address.getText().toString().trim();
+
+            // 주소 입력란이 비어 있는지 확인
+            if (!TextUtils.isEmpty(editAddress)) {
+                Intent intent = new Intent(JoinActivity.this, CertificateDongNae.class);
+                intent.putExtra("address", editAddress);
+                activityResultLauncher.launch(intent);
+            } else {
+                // 주소 입력란이 비어 있는 경우 메시지 표시 또는 다른 작업 수행
+                Toast.makeText(JoinActivity.this, "주소를 입력하세요", Toast.LENGTH_SHORT).show();
+            }
+        }
+    });
+
+
 
 
 
@@ -472,6 +503,7 @@ protected  void setBankSpinner() {
     confirmPhoneNumberEditText = findViewById(R.id.confirmPhoneNumberEditText);
     confirmPhoneNumberButton = findViewById(R.id.confirmPhoneNumberButton);
     confirmPhoneNumberLayout = findViewById(R.id.confirmPhoneNumberLayout);
+    certificateDongNaeButton = findViewById(R.id.certificateDongNaeButton);
 
 
 

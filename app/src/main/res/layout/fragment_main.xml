@@ -33,7 +33,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="72dp"
-                android:background="@color/white" /> <!-- 상단 레이아웃의 아래에 여백 추가 -->
+                android:background="@color/white" />
+
+            <ImageView
+                android:id="@+id/homeBlankImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:visibility="gone"
+                android:background="@color/white"
+                app:srcCompat="@drawable/ic_blankpost" />
 
             <!-- 상단 레이아웃 -->
             <LinearLayout

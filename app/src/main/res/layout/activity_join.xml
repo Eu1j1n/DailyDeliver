@@ -213,7 +213,28 @@
                 android:hint="나머지 주소를 입력하세요(선택 사항)"
                 android:padding="10dp" />
 
+
+
         </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/certificateDongNaeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="동네 인증"
+                android:padding="5dp"
+                app:backgroundTint="@color/carrot"
+                app:icon="@drawable/ic_certificatelocation"
+                app:iconPadding="5dp"
+                app:iconGravity="textStart" />
+        </LinearLayout>
 
 
         <LinearLayout
@@ -249,6 +270,8 @@
                 app:backgroundTint="@color/carrot"
                 android:padding="5dp" />
         </LinearLayout>
+
+
 
         <LinearLayout
             android:layout_width="match_parent"

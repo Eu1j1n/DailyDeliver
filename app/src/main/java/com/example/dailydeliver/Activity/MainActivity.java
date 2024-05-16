@@ -2,24 +2,19 @@ package com.example.dailydeliver.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.dailydeliver.Chatting.ChatFragment;
 import com.example.dailydeliver.Fragment.HomeFragment;
 import com.example.dailydeliver.R;
-import com.example.dailydeliver.WishListFragment;
+import com.example.dailydeliver.Fragment.WishListFragment;
 import com.example.dailydeliver.profile.UserProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -96,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = wishListFragment;
                         Bundle wishBundle = new Bundle();
                         wishBundle.putString("receivedID", receivedID);
-                        chatFragment.setArguments(wishBundle);
+                        wishListFragment.setArguments(wishBundle);
 
                         break;
                     case R.id.bottom_mypage:

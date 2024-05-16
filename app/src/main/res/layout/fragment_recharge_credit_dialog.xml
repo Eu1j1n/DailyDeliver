@@ -48,17 +48,20 @@
 
     <CheckBox
         android:id="@+id/checkbox_option6"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Credit 199,000 / 200,000원" />
 
     <!-- 버튼 (가운데 정렬) -->
-    <Button
+    <ImageButton
         android:id="@+id/kakaoPayButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="카카오페이 결제하기"
+        android:background="@color/white"
+        android:src="@drawable/payment_icon_yellow_small"
         android:textSize="15sp"
         android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="16dp" />
 </LinearLayout>

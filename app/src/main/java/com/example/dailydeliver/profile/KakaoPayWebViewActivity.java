@@ -3,6 +3,7 @@ package com.example.dailydeliver.profile;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.dailydeliver.ApiService;
@@ -137,14 +138,23 @@ public class KakaoPayWebViewActivity extends AppCompatActivity {
     private class CustomWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.startsWith("intent://")) {
+            Log.d(TAG, "shouldOverrideUrlLoading: uri" + url);
+            if (url.startsWith("http://43.201.32.122/success.php")) {
+                Uri uri = Uri.parse(url);
+
+                String pgToken = uri.getQueryParameter("pg_token");
+                if (pgToken != null) {
+                    approveKakaoPay(pgToken);
+                }
+                return true;
+            } else if (url.startsWith("intent://")) {
+                // 기존의 intent 처리 코드
                 try {
                     Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
                     if (intent != null) {
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
                         } else {
-
                             Toast.makeText(getApplicationContext(), "카카오톡 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -156,5 +166,6 @@ public class KakaoPayWebViewActivity extends AppCompatActivity {
             return false;
         }
     }
+
 
 }

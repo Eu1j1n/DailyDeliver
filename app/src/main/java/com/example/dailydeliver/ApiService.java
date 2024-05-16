@@ -1,5 +1,6 @@
 package com.example.dailydeliver;
 
+import com.example.dailydeliver.Adapter.WishData;
 import com.example.dailydeliver.Chatting.ChatMessage;
 import com.example.dailydeliver.Fragment.HomeData;
 import com.example.dailydeliver.Fragment.KakaoPayLoad;
@@ -39,6 +40,11 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Body Map<String, Object> data
     );
+
+    @FormUrlEncoded
+    @POST("clickedChatRoom.php")
+    Call<Void> sendChatRoomData(@Field("receivedID") String receivedID, @Field("hideRoomName") String hideRoomName);
+
 
 
     @POST("v1/payment/approve")
@@ -133,6 +139,9 @@ public interface ApiService {
 
     @GET("send_post.php")
     Call<List<HomeData>> getPosts();
+
+    @GET("sendLikePost.php")
+    Call<List<WishData>> getWishDataList(@Query("receivedID") String receivedID);
 
     @Multipart
     @POST("uploadPostImage.php")

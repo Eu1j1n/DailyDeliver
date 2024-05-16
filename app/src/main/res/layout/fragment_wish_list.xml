@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/swiperefreshlayout"
     android:layout_height="match_parent"
-    tools:context=".WishListFragment">
+    tools:context=".Fragment.WishListFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,10 +32,21 @@
                 android:id="@+id/wishProductRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="72dp"
-                android:background="@color/white" /> <!-- 상단 레이아웃의 아래에 여백 추가 -->
 
-            <!-- 상단 레이아웃 -->
+                android:layout_marginTop="72dp"
+                android:background="@color/white" />
+
+
+
+            <ImageView
+                android:id="@+id/blankImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:background="@color/white"
+                app:srcCompat="@drawable/ic_blankpost" />
+
             <LinearLayout
                 android:id="@+id/upbar"
                 android:layout_width="match_parent"

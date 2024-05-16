@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -35,7 +36,7 @@ public class RechargeCreditDialogFragment extends DialogFragment {
     }
 
     private CheckBox option1CheckBox, option2CheckBox, option3CheckBox, option4CheckBox, option5CheckBox, option6CheckBox;
-    private Button kakaoPayButton;
+    private ImageButton kakaoPayButton;
 
     String TAG = "충전 다이얼로그";
 

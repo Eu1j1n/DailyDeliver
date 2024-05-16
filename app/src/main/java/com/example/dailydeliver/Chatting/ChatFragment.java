@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -60,6 +61,8 @@ public class ChatFragment extends Fragment {
     private String receivedID;
     private String loginType;
     private String kakaoProfileImageUrl;
+
+    ImageView chatBlackImageView;
     private String TAG = "채팅 목록 액티비티 프래그먼트";
 
     private String ip = "52.79.88.52";
@@ -82,6 +85,7 @@ public class ChatFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_chat_rooms);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        chatBlackImageView = view.findViewById(R.id.chatBlankImageView);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
@@ -96,6 +100,10 @@ public class ChatFragment extends Fragment {
             intent.putExtra("loginType", loginType);
             intent.putExtra("kakaoUrl", kakaoProfileImageUrl);
             intent.putExtra("roomName", clickedChatRoom.getHideRoomName());
+            sendChatRoomDataToServer(receivedID, clickedChatRoom.getHideRoomName());
+
+            Log.d(TAG, "HiderRoomName" + clickedChatRoom.getHideRoomName());
+            Log.d(TAG, "receivedID" + receivedID);
             Log.d(TAG, "clickedDSda" + clickedChatRoom.getHideRoomName());
             startActivity(intent);
         });
@@ -166,7 +174,7 @@ public class ChatFragment extends Fragment {
             chatRoomItems.add(0, newRoomItem);
         }
 
-        // UI 업데이트가 필요한 시점에서 목록을 갱신
+
         updateChatListUI();
 
         getOtherProfileImage(event.getSenderID());
@@ -184,7 +192,8 @@ public class ChatFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "성공");
                     JsonArray jsonArray = response.body();
-                    Log.d(TAG, "jsonArray" + jsonArray);
+
+                    Log.d(TAG, "jsonArray13245" + jsonArray);
                     if (jsonArray != null && jsonArray.size() > 0) {
                         chatRoomItems.clear();
 
@@ -206,6 +215,7 @@ public class ChatFragment extends Fragment {
                             String lastMessage = jsonObject.get("message_content").getAsString();
                             String currentTime = jsonObject.get("currentTime").getAsString();
 
+
                             if (lastMessage.startsWith("image_")) {
                                 lastMessage = "(사진)";
                             }
@@ -224,15 +234,46 @@ public class ChatFragment extends Fragment {
                     }
                 } else {
                     Log.e(TAG, "서버 응답 실패");
+
+                    recyclerView.setVisibility(View.GONE);
+                    chatBlackImageView.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Call<JsonArray> call, Throwable t) {
                 Log.e(TAG, "통신 실패: " + t.getMessage());
+                recyclerView.setVisibility(View.GONE);
+                chatBlackImageView.setVisibility(View.VISIBLE);
             }
         });
     }
+
+    private void sendChatRoomDataToServer(String receivedID, String hideRoomName) {
+        // Retrofit 인터페이스의 객체 생성
+        ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
+
+        // 서버에 전송할 데이터를 바로 전달
+        Call<Void> call = apiService.sendChatRoomData(receivedID, hideRoomName);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "성공");
+                } else {
+                    Log.d(TAG, "onResponse: 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d(TAG, "onFailure: 통신실패" + t.getMessage());
+            }
+        });
+    }
+
+
+
 
 
 

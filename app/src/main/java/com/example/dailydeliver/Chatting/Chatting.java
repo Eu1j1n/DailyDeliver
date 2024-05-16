@@ -345,6 +345,53 @@ public class Chatting extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop:  드러옴?");
+        new Thread() {
+            @Override
+            public void run() {
+                Log.d(TAG, "들어와?");
+                sendMessageToServer("alsldlfkdscjndnjdidjaknckajsnkqwduin-=e3wqsa");
+                closeSocket();
+            }
+        }.start();
+    }
+
+    // 서버에 메시지를 보내는 메서드
+    private void sendMessageToServer(String message) {
+        new Thread() {
+            @Override
+            public void run() {
+
+                if (out != null) {
+                    Log.d(TAG, "들어와?2");
+                    sendWriter.println(roomName + ">" + receivedID + ">" +
+                            message + ">" + 12);
+                    Log.d(TAG, "이떄의 메세지" + message);
+
+                    sendWriter.flush();
+                }
+            }
+        }.start();
+    }
+
+
+
+    private void closeSocket() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
     class msgUpdate implements Runnable {
         private String msg;

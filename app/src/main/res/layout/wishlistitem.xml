@@ -23,7 +23,7 @@
 
 
 
-        <!-- 카드뷰 내부에 이미지뷰를 배치합니다. -->
+
         <ImageView
             android:id="@+id/wishProductImage"
             android:layout_width="match_parent"
@@ -98,7 +98,7 @@
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@+id/wishProductTitle"
         app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintEnd_toStartOf="@+id/timeTextView"
+        app:layout_constraintEnd_toStartOf="@+id/wishTimeTextView"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"

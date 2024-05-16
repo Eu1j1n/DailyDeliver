@@ -64,12 +64,16 @@ public class LoginActivity extends AppCompatActivity {
 
     String TAG = "로그인 액티비티";
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         findViewByID();
+
+        sharedPreferences = getSharedPreferences("LoginInfo", MODE_PRIVATE);
 
         getHashKey();
 

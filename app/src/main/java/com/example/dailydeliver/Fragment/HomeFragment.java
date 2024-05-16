@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -33,6 +34,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
     private List<HomeData> homeData;
     private RecyclerView recyclerView;
     private HomeAdapter homeAdapter;
+
+    ImageView homeBlankImageView;
 
     private ProgressBar progressBar;
 
@@ -71,6 +74,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         postButton = view.findViewById(R.id.postButton);
+        homeBlankImageView = view.findViewById(R.id.homeBlankImageView);
         homeAdapter = new HomeAdapter(getContext(), homeData, this); // 클릭 리스너 추가
         recyclerView.setAdapter(homeAdapter);
         progressBar = view.findViewById(R.id.homeProgressBar);
@@ -152,12 +156,15 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
                     Log.d(TAG, "onResponse: 실패냐?");
                 }
                 swipeRefreshLayout.setRefreshing(false);
+
             }
 
             @Override
             public void onFailure(Call<List<HomeData>> call, Throwable t) {
                 Log.e(TAG, "에러 6= " + t.getMessage());
                 swipeRefreshLayout.setRefreshing(false);
+                recyclerView.setVisibility(View.GONE);
+                homeBlankImageView.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -182,7 +189,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.OnItemClickLis
     // 클릭 이벤트 처리
     @Override
     public void onItemClick(HomeData item) {
-        // 클릭된 아이템의 정보를 받아올 수 있습니다.
+
         Intent intent = new Intent(getActivity(), ProductDetail.class);
         intent.putExtra("imageUri", item.getImage_uri());
         intent.putExtra("title", item.getTitle());

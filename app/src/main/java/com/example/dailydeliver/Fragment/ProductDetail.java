@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
@@ -424,7 +425,6 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     Log.d(TAG, "updatedPrice" + updatedPrice);
 
 
-
                     // 즉시 구매가를 서버에서 처리 후 적절한 비교 로직 적용
                     if (bidPrice >= Integer.parseInt(price.replace("₩", "").replace(",", ""))) {
                         // 즉시 구매가를 초과하였을 때의 처리
@@ -438,7 +438,9 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                         // 입찰가가 성공적으로 업데이트된 경우
                         currentServerBidPrice.setText("현재입찰가 ₩" + String.format("%,d", updatedPrice));
 
-                        Toast.makeText(getApplicationContext(), "입찰가가 업데이트되었습니다. 새로운 입찰가: "+ updatedPrice, Toast.LENGTH_SHORT).show();
+                        String toastText = "입찰가가 업데이트되었습니다.<br/>    새로운 입찰가: ₩" + String.format("%,d", updatedPrice);
+                        Toast.makeText(getApplicationContext(), Html.fromHtml("<div align='center'>" + toastText + "</div>"), Toast.LENGTH_SHORT).show();
+
                     }
 
                 } else {
