@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class CertificateDongNae extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+public class CertificateDongNae extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -48,7 +48,11 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
     private Button certificateDongNaeButton;
     private Marker currentMarker;
 
+    private LatLng currentLatLng;
+    private LatLng destinationLatLng;
+
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final double DISTANCE_THRESHOLD_METERS = 2000.0; // 2km
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,26 +65,28 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
         Intent intent = getIntent();
         String address = intent.getStringExtra("address");
 
-
-        LatLng destinationLatLng = getLocationFromAddress(this, address); //사용자가 입력한 주소값
-
-
+        destinationLatLng = getLocationFromAddress(this, address); // 사용자가 입력한 주소값
         Log.d(TAG, "Destination LatLng: " + destinationLatLng);
-
 
         certificateDongNaeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
-                Intent resultIntent = new Intent();
-
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                if (currentLatLng != null && destinationLatLng != null) {
+                    double distance = distanceBetween(currentLatLng, destinationLatLng);
+                    if (distance <= DISTANCE_THRESHOLD_METERS) {
+                        // 동네 인증 성공
+                        Intent resultIntent = new Intent();
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    } else {
+                        // 동네 인증 실패
+                        Toast.makeText(CertificateDongNae.this, "동네 인증에 실패했습니다." , Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(CertificateDongNae.this, "현재 위치를 확인할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
 
         certificateBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +123,6 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                 startLocationUpdates();
             } else {
                 // 위치 권한이 거부되었을 때
@@ -135,13 +140,14 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new android.location.LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                 if (currentMarker != null) {
                     currentMarker.remove();
                 }
 
                 currentMarker = mMap.addMarker(new MarkerOptions().position(currentLatLng).title("현재 위치").draggable(true));
+                Log.d(TAG, "onLocationChanged: 처음에 마커 여기임?" + currentMarker);
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
             }
@@ -160,23 +166,8 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
-        mMap.setOnMapClickListener(this);
+        // Map 클릭 리스너 제거
     }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        mMap.clear();
-        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("선택한 위치").draggable(false));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-        getAddressFromLocation(latLng);
-
-
-
-
-
-    }
-
 
     private void getAddressFromLocation(LatLng latLng) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -186,7 +177,6 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
                 String address = addresses.get(0).getAddressLine(0);
                 Log.d(TAG, "latitude" + latLng.latitude);
                 Log.d(TAG, "longitude" + latLng.longitude);
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -207,7 +197,6 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
-                        // 마지막으로 알려진 위치가 있을 경우 처리합니다.
                         handleLocation(location);
                     } else {
                         // 마지막으로 알려진 위치가 없는 경우 새로운 위치 업데이트를 요청
@@ -215,7 +204,6 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
                     }
                 })
                 .addOnFailureListener(e -> {
-
                     Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "getLastKnownLocation: " + e.getMessage());
                 });
@@ -240,7 +228,6 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
 
         return latLng;
     }
-
 
     private void requestNewLocation() {
         // 위치 업데이트 요청을 시작
@@ -284,10 +271,13 @@ public class CertificateDongNae extends AppCompatActivity implements OnMapReadyC
         return location1.distanceTo(location2);
     }
 
-
     private void handleLocation(Location location) {
         // 위치를 처리하는 코드를 여기에 작성
-        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+        // 위도와 경도
+        Log.d(TAG, "위경도: " + currentLatLng.latitude + ", Longitude: " + currentLatLng.longitude);
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
         currentMarker = mMap.addMarker(new MarkerOptions().position(currentLatLng).title("현재 위치").draggable(true));
     }

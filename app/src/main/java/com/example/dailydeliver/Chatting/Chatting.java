@@ -2,9 +2,11 @@ package com.example.dailydeliver.Chatting;
 
 import static java.lang.System.out;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -12,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
@@ -26,6 +29,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.privacysandbox.tools.core.model.Method;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,7 +55,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -93,6 +101,9 @@ public class Chatting extends AppCompatActivity {
 
     PrintWriter sendWriter;
 
+
+    private static final int CAMERA_PERMISSION_CODE = 100;
+    private static final int REQUEST_CODE = 1;
     private BottomSheetDialog dialog;
 
 
@@ -116,7 +127,13 @@ public class Chatting extends AppCompatActivity {
 
     String baseUri = "http://43.201.32.122";
 
+    private File cameraImageFile;
+
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
+
     int PICK_IMAGE_REQUEST = 1;
+
+    int CAMERA_REQUEST = 0;
 
 
     private List<com.example.dailydeliver.Chatting.Message> messageList;
@@ -158,13 +175,17 @@ public class Chatting extends AppCompatActivity {
         getToken(receiver);
 
 
-
-
-
-
-
-
         getChatHistory(roomName);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+        }
+
+
 
 
 
@@ -345,19 +366,19 @@ public class Chatting extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop:  드러옴?");
-        new Thread() {
-            @Override
-            public void run() {
-                Log.d(TAG, "들어와?");
-                sendMessageToServer("alsldlfkdscjndnjdidjaknckajsnkqwduin-=e3wqsa");
-                closeSocket();
-            }
-        }.start();
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        Log.d(TAG, "onStop:  드러옴?");
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                Log.d(TAG, "들어와?");
+//                sendMessageToServer("alsldlfkdscjndnjdidjaknckajsnkqwduin-=e3wqsa");
+//                closeSocket();
+//            }
+//        }.start();
+//    }
 
     // 서버에 메시지를 보내는 메서드
     private void sendMessageToServer(String message) {
@@ -790,24 +811,14 @@ public class Chatting extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri selectedImageUri = data.getData();
-
-            // 이미지를 서버에 업로드
-            uploadImage(selectedImageUri);
-        }
-    }
 
 
 
 
 
 
-    private void uploadImage(Uri imageUri) { // 이미지 채팅 올리는곳
+
+    private void uploadImage(Uri imageUri) {
         // Retrofit 클라이언트 생성
         ApiService apiService = RetrofitClient.getClient(baseUri).create(ApiService.class);
 
@@ -816,42 +827,62 @@ public class Chatting extends AppCompatActivity {
         // 폴더 이름 설정
         RequestBody folderName = RequestBody.create(MediaType.parse("text/plain"), "your_folder_name");
 
-        // 이미지 파일 생성
-        File file = new File(getRealPathFromURI(imageUri));
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        try {
+            // 이미지 파일 생성
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            if (inputStream == null) {
+                Log.e(TAG, "Failed to open InputStream from URI");
+                return;
+            }
 
-        // MultipartBody.Part 생성
-        MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+            File tempFile = new File(getCacheDir(), fileName);
+            FileOutputStream outputStream = new FileOutputStream(tempFile);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.close();
+            inputStream.close();
 
-        // 이미지 업로드 API 호출
-        Call<ResponseBody> call = apiService.uploadChatImage(folderName, body, RequestBody.create(MediaType.parse("text/plain"), fileName));
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), tempFile);
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
+            // MultipartBody.Part 생성
+            MultipartBody.Part body = MultipartBody.Part.createFormData("image", tempFile.getName(), requestFile);
 
-                        sendImageMessage(fileName);
-                        Log.d(TAG, "Server response: " + response.body().string());
+            // 이미지 업로드 API 호출
+            Call<ResponseBody> call = apiService.uploadChatImage(folderName, body, RequestBody.create(MediaType.parse("text/plain"), fileName));
 
-                        Log.d(TAG, "Image uploaded successfully");
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            sendImageMessage(fileName);
+                            Log.d(TAG, "Server response: " + response.body().string());
+                            Log.d(TAG, "Image uploaded successfully");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        // 이미지 업로드 실패
+                        Log.e(TAG, "Image upload failed");
                     }
-                } else {
-                    // 이미지 업로드 실패
-                    Log.e(TAG, "Image upload failed");
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // 네트워크 오류 등 실패 시 처리
-                Log.e(TAG, "Image upload failure: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    // 네트워크 오류 등 실패 시 처리
+                    Log.e(TAG, "Image upload failure: " + t.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "File creation failed: " + e.getMessage());
+        }
     }
+
+
 
     private void sendImageMessage(String fileName) {
         long messageID = generateMessageId(); //  return System.currentTimeMillis();
@@ -917,6 +948,49 @@ public class Chatting extends AppCompatActivity {
         return filePath;
     }
 
+    private File saveImageFromCamera(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            cameraImageFile = saveBitmapToFile(imageBitmap);
+            return cameraImageFile;
+        }
+        return null;
+    }
+
+    private File saveBitmapToFile(Bitmap bitmap) {
+
+        String filename = "image_" + System.currentTimeMillis() + ".jpg";
+
+
+        File externalFilesDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(externalFilesDir, filename);
+
+        try {
+            // 파일 출력 스트림 생성
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+
+            // Bitmap을 JPEG 형식으로 압축하여 파일에 저장
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
+            // 파일 출력 스트림 닫기
+            outputStream.close();
+
+            // 저장된 파일의 Uri를 반환
+            return imageFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+
+
+
+
+
     private void showBottomSheetDialog() {
         dialog = new BottomSheetDialog(Chatting.this);
         View contentView = getLayoutInflater().inflate(R.layout.bottomdialog, null);
@@ -939,6 +1013,34 @@ public class Chatting extends AppCompatActivity {
         dialog.show();
     }
 
+    public void onCameraClick(View view) {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                // 이미지 파일을 저장할 임시 파일을 생성합니다.
+                cameraImageFile = createImageFile();
+                if (cameraImageFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this, "your.package.name.fileprovider", cameraImageFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String fileName = "image_" + System.currentTimeMillis();
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(fileName, ".jpg", storageDir);
+    }
+
+
     public void onAlbumClick(View view) {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
@@ -951,6 +1053,27 @@ public class Chatting extends AppCompatActivity {
         // 갤러리 앱 시작
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            // 갤러리로부터 이미지를 선택한 경우
+            Uri selectedImageUri = data.getData();
+            uploadImage(selectedImageUri);
+        } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            // 카메라로부터 이미지를 촬영한 경우
+            if (cameraImageFile != null && cameraImageFile.exists()) {
+                Uri imageUri = Uri.fromFile(cameraImageFile);
+                uploadImage(imageUri);
+            }
+        }
+    }
+
+
 
 
 

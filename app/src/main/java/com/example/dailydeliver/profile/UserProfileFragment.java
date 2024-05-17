@@ -118,9 +118,8 @@ public class UserProfileFragment extends Fragment implements RechargeCreditDialo
             String timestamp = String.valueOf(System.currentTimeMillis());
             String imageFileName = receiveID + "_" + timestamp + ".jpg";
 
-            Log.d(TAG, "imageFileName" + imageFileName);
-
-            Log.d(TAG, "receiveID 값" + receiveID);
+            Log.d(TAG, "imageFileName: " + imageFileName);
+            Log.d(TAG, "receiveID 값: " + receiveID);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
             MultipartBody.Part imagePart = MultipartBody.Part.createFormData("uploaded_file", imageFileName, requestBody);
@@ -131,30 +130,35 @@ public class UserProfileFragment extends Fragment implements RechargeCreditDialo
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        // 이미지 업로드 성공 시 동작
-                        Glide.with(getActivity())
-                                .clear(profileImage);
-                        Glide.with(getActivity())
-                                .load(imageUri)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(profileImage);
+                        // Ensure the fragment is added before updating the UI
+                        if (isAdded()) {
+                            Glide.with(getActivity())
+                                    .clear(profileImage);
+                            Glide.with(getActivity())
+                                    .load(imageUri)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(profileImage);
 
-                        Log.d(TAG, "이미지 업로드 성공 !");
+                            Log.d(TAG, "이미지 업로드 성공!");
+                        }
                     } else {
                         // 이미지 업로드 실패 시 동작
-                        Log.d(TAG, "이미지 업로드 실패 !");
+                        Log.d(TAG, "이미지 업로드 실패!");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e(TAG, "에러 = " + t.getMessage());
-                    Toast.makeText(getActivity(), "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "에러: " + t.getMessage());
+                    if (isAdded()) {
+                        Toast.makeText(getActivity(), "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
     }
+
 
 
     private File saveImageToTempFile(Uri imageUri) {
@@ -255,12 +259,11 @@ public class UserProfileFragment extends Fragment implements RechargeCreditDialo
                                     });
                             dialog.show();
                         } else {
-                            // 카메라로 찍은 이미지인 경우
-                            // 이미지를 파일로 저장하고 해당 파일의 Uri를 가져옵니다.
+
                             File imageFile = saveImageFromCamera(intent);
                             if (imageFile != null) {
                                 selectedImageUri = Uri.fromFile(imageFile);
-                                // 파일로 저장한 이미지를 서버에 업로드하기 전에 사용자에게 물어봅니다.
+
                                 CustomDialog dialog = new CustomDialog(getActivity(),
                                         "프로필 사진을 변경하시겠습니까?",
                                         new View.OnClickListener() {
