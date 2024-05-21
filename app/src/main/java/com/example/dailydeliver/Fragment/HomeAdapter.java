@@ -27,6 +27,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private List<HomeData> homeData;
     private LayoutInflater mInflater;
+
+    private long lastClickTime = 0;
     private OnItemClickListener itemClickListener; // 클릭 리스너 인터페이스
 
     String TAG = "홈 어댑터";
@@ -127,14 +129,23 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
 
         // 아이템 클릭 이벤트 처리
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (itemClickListener != null) {
-                    itemClickListener.onItemClick(item); // 클릭된 아이템 전달
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime > 500) { // 500ms 간격으로 클릭을 허용
+                    lastClickTime = currentTime;
+                    if (itemClickListener != null) {
+                        itemClickListener.onItemClick(item);
+                    }
                 }
             }
         });
+
+
+
 
         // 이미지를 설정
         if (item.getImage_uri() != null) {
@@ -165,6 +176,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         TextView priceTextView;
         TextView userNametextView;
         ImageView productImageView;
+
+
 
         TextView biddingPriceTextView;
 

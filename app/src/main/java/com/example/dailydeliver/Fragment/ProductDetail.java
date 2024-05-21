@@ -64,6 +64,8 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
     // CountDownTimer 객체 선언
     private CountDownTimer countDownTimer;
 
+
+
     private String globalBidPrice;
 
     // 각 위젯들을 참조하기 위한 변수 선언
@@ -471,6 +473,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     buyBidButton.setEnabled(false);
                     buyButton.setEnabled(false);
                     immediateEditText.setText("낙찰된 제품입니다.");
+                    priceTextView.setText("즉시구매가  " + price);
 
                     immediateBuyToServerButton.setEnabled(false);
                     Drawable grayButton = ContextCompat.getDrawable(ProductDetail.this, R.drawable.gray_button);
