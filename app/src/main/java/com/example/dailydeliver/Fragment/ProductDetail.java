@@ -757,10 +757,15 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
             PostDetailData imageData = imageDataList.get(0);
             globalBidPrice = imageData.getBidPrice();
 
-            Log.d(TAG, "입찰가 " + imageData.getBidPrice());
-            Log.d(TAG, "타입" + imageData.getSaleType());
-            Log.d(TAG, "남은 시간" + imageData.getRemaining_time());
-            Log.d(TAG, "좋아요값" + imageData.getLikeStatus());
+            if(receivedID.equals(imageData.getUserName())) {
+                Log.d(TAG, "IDs are equal, hiding buttons");
+                likeButton.setVisibility(View.GONE);
+                unlikeButton.setVisibility(View.GONE);
+            } else {
+                Log.d(TAG, "IDs are not equal, showing buttons");
+            }
+
+
 
             if (imageData.getLikeStatus() == 1) {
                 isLiked = 1; // 좋아요 상태
@@ -786,6 +791,7 @@ public class ProductDetail extends AppCompatActivity implements ImagePagerAdapte
                     inputBidPriceEditText.setText("낙찰된 제품입니다.");
                     bidUpdateToServerButton.setBackground(grayButton);
                     bidUpdateToServerButton.setEnabled(false);
+                    priceTextView.setText("즉시구매가 " + imageData.getPrice());
                     immediateBuyToServerButton.setEnabled(false);
 
                     immediateEditText.setText("낙찰된 제품입니다.");
